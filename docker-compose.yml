@@ -7,10 +7,8 @@ services:
   command: bash -c 'while !</dev/tcp/database/3306; do sleep 1; done; npm start'
   depends_on:
      - database
-  restart: on-failure
-    environment:
-      - DATABASE_HOST=database
-    ports:
-      - 3000:3000
-    networks:
-      - app-tier
+  restart: on-failure 
+  ports:
+    - 3000:3000
+  networks:
+    - app-tier
