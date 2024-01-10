@@ -17,6 +17,9 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
+app.get('/home', (req, res) => {
+  res.render('home');
+});
 app.get('/build-pc', (req, res) => {
   // You can pass in an array of PC components if you have one
   // For now, let's just render the page
