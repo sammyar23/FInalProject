@@ -17,9 +17,17 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
-app.get('/build', (req, res) => {
-  res.render('build-pc');
-})
+app.get('/build-pc', (req, res) => {
+  // Assuming pcComponents is an array of objects containing component data
+  const pcComponents = [
+    { name: 'Component 1', price: 100, rating: 4.5 },
+    { name: 'Component 2', price: 200, rating: 4.0 },
+    // Add more components as needed
+  ];
+
+  // Render the build-pc.pug template with pcComponents data
+  res.render('build-pc', { pcComponents });
+});
 
 // Start the server on the defined port
 app.listen(port, () => {
