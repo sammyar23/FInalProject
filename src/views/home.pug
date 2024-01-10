@@ -1,12 +1,22 @@
-doctype html
-html(lang="en")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title= pageTitle
-    link(rel="stylesheet" href="/css/style.css") // Link to your CSS stylesheet
-  body
-    block content
-    footer
-      .container
-        p © 2024 TechCrafters. All rights reserved.
+extends layout
+
+block content
+  header
+    .container
+      nav
+        ul.nav-list
+          li.nav-item: a(href="/") Home
+          li.nav-item: a(href="/forum") Forum
+          li.nav-item: a(href="/build-pc") Build PC
+          li.nav-item: a(href="/recommend-pc") Recommended PCs
+          li.nav-item: a(href="/info-help") Info/Help
+  .main-content
+    .welcome-banner
+      h1 Welcome to TechCrafters
+      p The ultimate destination for custom PC enthusiasts.
+    .page-links
+      ul
+        li: a(href="/forum") Forum
+        li: a(href="/build-pc") Build PC
+        li: a(href="/recommend-pc") Recommended PCs
+        li: a(href="/info-help") Info/Help
