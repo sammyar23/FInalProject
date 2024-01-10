@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/569ed1b9-a71b-4951-bae2-ff49d4e3c5b0/resourceGroups/TechCrafters/providers/Microsoft.Web/sites/TechCrafters",
+    "appService.deploySubpath": "."
+}
