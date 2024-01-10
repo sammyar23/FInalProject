@@ -15,6 +15,9 @@ COPY . .
 # Install dependencies (inside the container)
 RUN npm install
 
+RUN which npm && npm --version
+
+
 # Expose server port
 EXPOSE 3000
 
