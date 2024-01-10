@@ -4,6 +4,9 @@ FROM node:latest
 # Create server directory inside image
 WORKDIR /app
 
+# Ensure there is no default entrypoint
+ENTRYPOINT []
+
 # Copy the source code (src -> /app)
 # node_modules directory is ignored via .dockerignore file
 COPY . .
