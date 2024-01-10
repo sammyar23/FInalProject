@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  header
+    .container
+      nav
+        ul.nav-list
+          li.nav-item: a(href="/") Home
+          li.nav-item: a(href="/forum") Forum
+          li.nav-item: a(href="/build-pc") Build PC
+          li.nav-item: a(href="/recommend-pc") Recommended PCs
+          li.nav-item: a(href="/info-help") Info/Help
+
+  .main-content
+    h1 Build Your PC
+    p Use the Amazon API to help you build your dream PC.
+
+    //- Display PC components fetched from the Amazon API
+    .pc-components
+      //- Iterate over the list of PC components here
+      each component in pcComponents
+        .component-item
+          h2= component.name
+          p Price: #{component.price}
+          p Rating: #{component.rating}
+    
+    //- JavaScript to fetch and display PC components
+    script.
+      fetch('/api/amazon-pc-components')
+        .then(response => response.json())
+        .then(data => {
+          const pcComponents = data.components;
+          // Update the DOM to display the fetched components
+        })
+        .catch(error => console.error('Error fetching PC components:', error));
