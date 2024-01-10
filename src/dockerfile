@@ -1,5 +1,6 @@
 # Use Node JS v16.x as base image
-FROM node:latest
+FROM node:16
+
 
 # Create server directory inside image
 WORKDIR /app
