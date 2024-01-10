@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   webserver:
-  container_name: nodeJsContainer
-  build: ./src
-  command: bash -c 'while !</dev/tcp/database/3306; do sleep 1; done; npm start'
-  depends_on:
-     - database
-  restart: on-failure 
-  ports:
-    - 3000:3000
-  networks:
-    - app-tier
+    container_name: nodeJsContainer
+    build: ./src
+    command: bash -c 'while !</dev/tcp/database/3360; do sleep 1; done; npm start'
+    depends_on:
+      - database
+    restart: on-failure
+    ports:
+      - 3000:3000
+    networks:
+      - app-tier
