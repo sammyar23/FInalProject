@@ -19,4 +19,8 @@ app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
 });
 
+app.listen(port, () => {
+  console.log(`Server running on port ${port} yay`);
+});
+
 module.exports = app; // This line is important if you're testing or you need to require your app in another file.
