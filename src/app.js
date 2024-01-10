@@ -18,16 +18,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/build-pc', (req, res) => {
-  // Assuming pcComponents is an array of objects containing component data
-  const pcComponents = [
-    { name: 'Component 1', price: 100, rating: 4.5 },
-    { name: 'Component 2', price: 200, rating: 4.0 },
-    // Add more components as needed
-  ];
-
-  // Render the build-pc.pug template with pcComponents data
-  res.render('build-pc', { pcComponents });
+  // You can pass in an array of PC components if you have one
+  // For now, let's just render the page
+  res.render('build-pc');
 });
+
+// Define more routes as needed...
 
 // Start the server on the defined port
 app.listen(port, () => {
