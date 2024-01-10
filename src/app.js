@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
+// Define the port variable
+const port = process.env.PORT || 3000; // Use the provided port or default to 3000
+
 // Set Pug as the view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -14,13 +17,7 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
-// Start the server on port 3000
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
-});
-
+// Start the server on the defined port
 app.listen(port, () => {
-  console.log(`Server running on port ${port} yay`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
-
-module.exports = app; // This line is important if you're testing or you need to require your app in another file.
