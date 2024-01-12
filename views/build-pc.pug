@@ -9,14 +9,26 @@ block content
       label(for="cpu") CPU
       select(name="cpu" id="cpu-select")
         each cpu in cpus
-          option(value=cpu.socket) #{cpu.name} - #{cpu.price}
+          option(value=cpu.socket) #{cpu.name} - $#{cpu.price}
 
       label(for="motherboard") Motherboard
       select(name="motherboard" id="motherboard-select")
-        // Options will be populated by JavaScript
+        each mb in motherboards
+          option(value=mb.socket) #{mb.name} - $#{mb.price}
 
-      input(type="submit" value="Build")
+      label(for="gpu") GPU
+      select(name="gpu" id="gpu-select")
+        each gpu in gpus
+          option(value=gpu.id) #{gpu.name} - $#{gpu.price}
+
+      label(for="memory") Memory
+      select(name="memory" id="memory-select")
+        each mem in memory
+          option(value=mem.id) #{mem.size} - $#{mem.price}
+
+      // Add fields for other components as needed
+
+    input(type="submit" value="Build")
 
   script(src='/js/updateComponents.js')
   script(src='/js/buildPcFormHandler.js')
-
