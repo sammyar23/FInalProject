@@ -46,7 +46,7 @@ app.get('/api/components/cpu', async (req, res) => {
       const motherboards = JSON.parse(motherboardData);
   
       // Add similar blocks for other components
-      const gpuData = await fs.readFile('./data/json/gpu.json', 'utf8');
+      const gpuData = await fs.readFile('./data/json/video-card.json', 'utf8');
       const gpus = JSON.parse(gpuData);
   
       const memoryData = await fs.readFile('./data/json/memory.json', 'utf8');
