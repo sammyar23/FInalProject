@@ -8,11 +8,13 @@ body, html {
   }
 
   #logo {
-    height: 50px; /* Example height, adjust as needed */
+    height: auto; /* maintain aspect ratio */
+    width: 150px; /* or whatever width fits your design */
     position: absolute;
     top: 10px; /* Adjust as needed */
     left: 10px; /* Adjust as needed */
   }
+  
   
   
   /* Container styling */
@@ -112,9 +114,4 @@ body, html {
     width: 100%;
   }
   
-  .main-content {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
   
