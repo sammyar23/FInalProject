@@ -1,117 +1,150 @@
+/* General Reset */
+* {
+  box-sizing: border-box;
+}
+
 /* General styling */
 body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-  }
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
 
-  #logo {
-    height: auto; /* maintain aspect ratio */
-    width: 150px; /* or whatever width fits your design */
-    position: absolute;
-    top: 10px; /* Adjust as needed */
-    left: 10px; /* Adjust as needed */
-  }
-  
-  
-  
-  /* Container styling */
-  .container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
-  }
-  
-  /* Navigation bar styling */
-  nav {
-    background: #333;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-  }
-  
-  ul.nav-list {
-    list-style: none;
-    display: flex;
-  }
-  
-  li.nav-item {
-    margin: 0 20px;
-  }
-  
-  a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  a:hover {
-    color: #ffa500;
-  }
-  
-  /* Welcome banner styling */
-  .welcome-banner {
-    background: url('/images/banner.jpg') no-repeat center center/cover;
-    color: #fff;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .welcome-banner h1 {
-    font-size: 2.5em;
-  }
-  
-  .welcome-banner p {
-    font-size: 1.2em;
-  }
-  
-  /* Signup form styling */
-  .signup-section {
-    padding: 20px;
-    background: #fff;
-  }
-  
-  form.signup-form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: auto;
-  }
-  
-  .signup-form input,
-  .signup-form button {
-    padding: 10px;
-    margin: 10px 0;
-  }
-  
-  .signup-form button {
-    background: #333;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .signup-form button:hover {
-    background: #ffa500;
-    color: #fff;
-  }
-  
-  /* Footer styling */
-  footer {
-    background: #333;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-  }
-  
-  
+/* Logo styling */
+#logo {
+  display: block; /* makes the logo a block-level element */
+  margin: 0 auto; /* centers the logo in the container */
+  height: auto; /* maintains aspect ratio */
+  width: 150px; /* adjust as needed */
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+}
+
+/* Container styling */
+.container {
+  width: 80%;
+  margin: auto;
+  overflow: hidden;
+}
+
+/* Navigation bar styling */
+nav {
+  background: #333;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+ul.nav-list {
+  list-style: none;
+  display: flex;
+}
+
+li.nav-item {
+  margin: 0 20px;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #ffa500;
+}
+
+/* Welcome banner styling */
+.welcome-banner {
+  background: url('/images/banner.jpg') no-repeat center center/cover;
+  color: #fff;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.welcome-banner h1 {
+  font-size: 2.5em;
+}
+
+.welcome-banner p {
+  font-size: 1.2em;
+}
+
+/* Signup form styling */
+.signup-section {
+  padding: 20px;
+  background: #fff;
+}
+
+form.signup-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: auto;
+}
+
+.signup-form input,
+.signup-form button {
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.signup-form button {
+  background: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.signup-form button:hover {
+  background: #ffa500;
+  color: #fff;
+}
+
+/* Footer styling */
+footer {
+  background: #333;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Title and Form styling */
+.build-title {
+  text-align: center; /* centers the title */
+  font-size: 2em; /* increases the size of the title */
+  margin-top: 20px; /* adds space between the logo and the title */
+}
+
+/* Form styling for one component per row */
+.form-section {
+  display: flex;
+  flex-direction: column; /* stacks the form elements vertically */
+  align-items: center; /* centers the form elements horizontally */
+  gap: 20px; /* adds space between the form elements */
+  margin-bottom: 20px; /* adds space below the form */
+}
+
+.form-section select,
+.form-section input[type="submit"] {
+  width: 50%; /* adjusts the width of the dropdowns */
+  padding: 10px; /* increases the size of the dropdown */
+  font-size: 1.1em; /* makes the text a bit larger */
+}
+
+/* Adjust the submit button size */
+.form-section input[type="submit"] {
+  padding: 10px 20px;
+  font-size: 1.1em;
+}
