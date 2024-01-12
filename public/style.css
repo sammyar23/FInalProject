@@ -126,25 +126,70 @@ footer {
   font-size: 2em; /* increases the size of the title */
   margin-top: 20px; /* adds space between the logo and the title */
 }
+/* Header container styling */
+.header-container {
+  text-align: center;
+  margin-bottom: 30px; /* Adds space between the header and the form */
+}
 
-/* Form styling for one component per row */
+/* General form styling */
 .form-section {
-  display: flex;
-  flex-direction: column; /* stacks the form elements vertically */
-  align-items: center; /* centers the form elements horizontally */
-  gap: 20px; /* adds space between the form elements */
-  margin-bottom: 20px; /* adds space below the form */
+  width: 80%;
+  max-width: 600px; /* Adjust the width as necessary */
+  margin: auto; /* Centers the form in the page */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.form-section select,
-.form-section input[type="submit"] {
-  width: 50%; /* adjusts the width of the dropdowns */
-  padding: 10px; /* increases the size of the dropdown */
-  font-size: 1.1em; /* makes the text a bit larger */
+/* Form row styling */
+.form-row {
+  margin-bottom: 20px; /* Adds space between each form row */
 }
 
-/* Adjust the submit button size */
+/* Form input and select styling */
+.form-row select,
 .form-section input[type="submit"] {
-  padding: 10px 20px;
-  font-size: 1.1em;
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
+
+/* Form label styling */
+.form-row label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Form submit button styling */
+.form-button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-button:hover {
+  background-color: #ffa500;
+}
+
+/* Style for the fieldset and legend */
+fieldset {
+  border: none;
+  padding: 0;
+}
+
+legend {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Add other styles from the previous CSS here */
