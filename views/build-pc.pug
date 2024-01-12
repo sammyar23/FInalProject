@@ -33,9 +33,44 @@ block content
           each mem in memory
             option(value=mem.id) #{mem.name} - $#{mem.price}
 
-      // Add fields for other components as needed
+      // The rest of the components follow a similar pattern
+      .form-row
+        label(for="case") Case
+        select(name="case" id="case-select")
+          each case in cases
+            option(value=case.id) #{case.name} - $#{case.price}
 
-    input.form-button(type="submit" value="Build")
+      .form-row
+        label(for="case-fan") Case Fan
+        select(name="case-fan" id="case-fan-select")
+          each fan in case_fans
+            option(value=fan.id) #{fan.name} - $#{fan.price}
+
+      .form-row
+        label(for="cpu-cooler") CPU Cooler
+        select(name="cpu-cooler" id="cpu-cooler-select")
+          each cooler in cpu_coolers
+            option(value=cooler.id) #{cooler.name} - $#{cooler.price}
+
+      .form-row
+        label(for="internal-hard-drive") Internal Hard Drive
+        select(name="internal-hard-drive" id="internal-hard-drive-select")
+          each hdd in internal_hard_drives
+            option(value=hdd.id) #{hdd.name} - $#{hdd.price}
+
+      .form-row
+        label(for="power-supply") Power Supply
+        select(name="power-supply" id="power-supply-select")
+          each psu in power_supplies
+            option(value=psu.id) #{psu.name} - $#{psu.price}
+
+      .form-row
+        label(for="sound-card") Sound Card
+        select(name="sound-card" id="sound-card-select")
+          each sc in sound_cards
+            option(value=sc.id) #{sc.name} - $#{sc.price}
+
+      input.form-button(type="submit" value="Build")
 
   script(src='/js/updateComponents.js')
   script(src='/js/buildPcFormHandler.js')
