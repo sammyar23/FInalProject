@@ -14,9 +14,27 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.get('/api/components/cpu', async (req, res) => {
     try {
-      const data = await fs.readFile('./data/json/cpu.json', 'utf8'); // updated path
+      const data = await fs.readFile('./data/json/updated-cpu.json', 'utf8'); // updated path
       const cpus = JSON.parse(data);
       res.json(cpus);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
+  app.get('/build-pc', async (req, res) => {
+    try {
+      // Read the CPU data as an example
+      const cpuData = await fs.readFile('./data/json/updated-cpu.json', 'utf8');
+      const cpus = JSON.parse(cpuData);
+  
+      // You would do the same for other components, like GPUs, memory, etc.
+      // const gpuData = await fs.readFile('./data/json/gpu.json', 'utf8');
+      // const gpus = JSON.parse(gpuData);
+  
+      // Then pass all the data to your Pug template
+      res.render('build-pc', { cpus: cpus /*, gpus: gpus, ... */ });
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
