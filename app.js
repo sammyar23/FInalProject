@@ -49,27 +49,49 @@ app.get('/api/components/cpu', async (req, res) => {
   
   app.get('/build-pc', async (req, res) => {
     try {
+      // Read the data for CPUs and Motherboards (existing code)
       const cpuData = await fs.readFile('./data/json/updated-cpu.json', 'utf8');
       const cpus = JSON.parse(cpuData);
-  
       const motherboardData = await fs.readFile('./data/json/updated-motherboard.json', 'utf8');
       const motherboards = JSON.parse(motherboardData);
-  
-      // Add similar blocks for other components
       const gpuData = await fs.readFile('./data/json/video-card.json', 'utf8');
       const gpus = JSON.parse(gpuData);
-  
       const memoryData = await fs.readFile('./data/json/memory.json', 'utf8');
       const memory = JSON.parse(memoryData);
   
-      // Continue for other components...
+      // Add new components here
+      const caseData = await fs.readFile('./data/json/case.json', 'utf8');
+      const cases = JSON.parse(caseData);
+      const caseFanData = await fs.readFile('./data/json/case-fan.json', 'utf8');
+      const case_fans = JSON.parse(caseFanData);
+      const cpuCoolerData = await fs.readFile('./data/json/cpu-cooler.json', 'utf8');
+      const cpu_coolers = JSON.parse(cpuCoolerData);
+      const internalHardDriveData = await fs.readFile('./data/json/internal-hard-drive.json', 'utf8');
+      const internal_hard_drives = JSON.parse(internalHardDriveData);
+      const powerSupplyData = await fs.readFile('./data/json/power-supply.json', 'utf8');
+      const power_supplies = JSON.parse(powerSupplyData);
+      const soundCardData = await fs.readFile('./data/json/sound-card.json', 'utf8');
+      const sound_cards = JSON.parse(soundCardData);
   
-      res.render('build-pc', { cpus, motherboards, gpus, memory /*, other components... */ });
+      // Pass all the components to the Pug template
+      res.render('build-pc', {
+        cpus, 
+        motherboards, 
+        gpus, 
+        memory,
+        cases,
+        case_fans,
+        cpu_coolers,
+        internal_hard_drives,
+        power_supplies,
+        sound_cards
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
     }
   });
+  
 
   app.post('/submit-build', (req, res) => {
     // Here you can handle the submitted data
