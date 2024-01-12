@@ -1,35 +1,41 @@
 extends layout
 
 block content
-  img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
-  h1.build-title Build Your PC
+  div.header-container
+    img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
+    h1.build-title Build Your PC
+
   form.form-section(action="/submit-build" method="post")
     fieldset
       legend Choose Your Components
 
-      label(for="cpu") CPU
-      select(name="cpu" id="cpu-select")
-        each cpu in cpus
-          option(value=cpu.socket) #{cpu.name} - $#{cpu.price}
+      .form-row
+        label(for="cpu") CPU
+        select(name="cpu" id="cpu-select")
+          each cpu in cpus
+            option(value=cpu.socket) #{cpu.name} - $#{cpu.price}
 
-      label(for="motherboard") Motherboard
-      select(name="motherboard" id="motherboard-select")
-        each mb in motherboards
-          option(value=mb.socket) #{mb.name} - $#{mb.price}
+      .form-row
+        label(for="motherboard") Motherboard
+        select(name="motherboard" id="motherboard-select")
+          each mb in motherboards
+            option(value=mb.socket) #{mb.name} - $#{mb.price}
 
-      label(for="gpu") GPU
-      select(name="gpu" id="gpu-select")
-        each gpu in gpus
-          option(value=gpu.id) #{gpu.name} - $#{gpu.price}
+      .form-row
+        label(for="gpu") GPU
+        select(name="gpu" id="gpu-select")
+          each gpu in gpus
+            option(value=gpu.id) #{gpu.name} - $#{gpu.price}
 
-      label(for="memory") Memory
-      select(name="memory" id="memory-select")
-        each mem in memory
-          option(value=mem.id) #{mem.name} - $#{mem.price}
+      .form-row
+        label(for="memory") Memory
+        select(name="memory" id="memory-select")
+          each mem in memory
+            option(value=mem.id) #{mem.name} - $#{mem.price}
 
       // Add fields for other components as needed
 
-    input(type="submit" value="Build")
+    input.form-button(type="submit" value="Build")
 
   script(src='/js/updateComponents.js')
   script(src='/js/buildPcFormHandler.js')
