@@ -1,10 +1,8 @@
 doctype html
-html(lang="en")
+html
   head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title= pageTitle
-    link(rel="stylesheet" href="./public/style.css") // Update the path to your CSS file
+    // Correct usage of self-closing link tag in Pug
+    link(rel='stylesheet', href='/style.css')
   body
     block content
     footer
