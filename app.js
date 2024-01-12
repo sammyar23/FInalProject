@@ -96,7 +96,11 @@ app.get('/api/components/cpu', async (req, res) => {
   app.post('/submit-build', (req, res) => {
     // Here you can handle the submitted data
     // For now, let's just log it to the console
+    console.log('Build Name:', req.body.buildName); // Log the build name
+    console.log('Selected CPU:', req.body.cpu); // Log the selected CPU
+    console.log('Selected Motherboard:', req.body.motherboard)
     console.log('Form data:', req.body);
+    
   
     // You might want to redirect or render a new page after processing the form
     res.send('Build submitted successfully!'); // Or res.redirect('/some-page');
