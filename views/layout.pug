@@ -6,8 +6,16 @@ html
     // Other head elements
   body
     header
-      img(src='/techcrafters.png', alt='TechCrafters Logo', id='logo')
-      // Rest of the header content
+      .container
+        .logo-container
+          img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
+        nav
+          ul.nav-list
+            li.nav-item: a(href="/") Home
+            li.nav-item: a(href="/forum") Forum
+            li.nav-item: a(href="/build-pc") Build PC
+            li.nav-item: a(href="/recommend-pc") Recommended PCs
+            li.nav-item: a(href="/info-help") Info/Help
 
     block content
 
