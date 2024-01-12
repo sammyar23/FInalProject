@@ -1,8 +1,9 @@
 extends layout
 
 block content
-  h1 Build Your PC
-  form(action="/submit-build" method="post")
+  img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
+  h1.build-title Build Your PC
+  form.form-section(action="/submit-build" method="post")
     fieldset
       legend Choose Your Components
 
