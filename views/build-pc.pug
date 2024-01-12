@@ -7,10 +7,14 @@ block content
       legend Choose Your Components
 
       label(for="cpu") CPU
-      select(name="cpu")
+      select(name="cpu" id="cpu-select")
         each cpu in cpus
-          option(value=cpu.name) #{cpu.name} - #{cpu.price}
+          option(value=cpu.socket) #{cpu.name} - #{cpu.price}
 
-      // Add more fields for other components
+      label(for="motherboard") Motherboard
+      select(name="motherboard" id="motherboard-select")
+        // Options will be populated by JavaScript
 
       input(type="submit" value="Build")
+
+  script(src='/js/updateComponents.js')
