@@ -39,21 +39,39 @@ app.get('/api/components/cpu', async (req, res) => {
   
   app.get('/build-pc', async (req, res) => {
     try {
-      // Read the CPU data
       const cpuData = await fs.readFile('./data/json/updated-cpu.json', 'utf8');
       const cpus = JSON.parse(cpuData);
   
-      // Read the Motherboard data
       const motherboardData = await fs.readFile('./data/json/updated-motherboard.json', 'utf8');
       const motherboards = JSON.parse(motherboardData);
   
-      // Pass both CPU and Motherboard data to your Pug template
-      res.render('build-pc', { cpus: cpus, motherboards: motherboards });
+      // Add similar blocks for other components
+      const gpuData = await fs.readFile('./data/json/gpu.json', 'utf8');
+      const gpus = JSON.parse(gpuData);
+  
+      const memoryData = await fs.readFile('./data/json/memory.json', 'utf8');
+      const memory = JSON.parse(memoryData);
+  
+      // Continue for other components...
+  
+      res.render('build-pc', { cpus, motherboards, gpus, memory /*, other components... */ });
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
     }
   });
+
+  app.post('/submit-build', (req, res) => {
+    // Here you can handle the submitted data
+    // For now, let's just log it to the console
+    console.log('Form data:', req.body);
+  
+    // You might want to redirect or render a new page after processing the form
+    res.send('Build submitted successfully!'); // Or res.redirect('/some-page');
+  });
+  
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+  
   
   
 
