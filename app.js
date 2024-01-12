@@ -13,15 +13,16 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.get('/api/components/cpu', async (req, res) => {
-  try {
-    const data = await fs.readFile('./data/cpu.json', 'utf8');
-    const cpus = JSON.parse(data);
-    res.json(cpus);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+    try {
+      const data = await fs.readFile('./data/json/cpu.json', 'utf8'); // updated path
+      const cpus = JSON.parse(data);
+      res.json(cpus);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
 
 
 // Serve static files from the 'public' directory
