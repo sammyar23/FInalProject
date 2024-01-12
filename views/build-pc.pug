@@ -3,20 +3,6 @@ extends layout
 block content
   div.header-container
     img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
-    h1.build-title Build Your PC
-
-  form.form-section(action="/submit-build" method="post")
-    fieldset
-      legend Name Your Build
-      .form-row
-        label(for="build-name") Build Name
-        input(type="text" name="buildName" id="build-name" placeholder="Enter a name for your build" required)
-
-      extends layout
-
-block content
-  div.header-container
-    img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
     h1.build-title Name & Build Your PC
 
   form.form-section(action="/submit-build" method="post")
@@ -39,7 +25,6 @@ block content
         select(name="motherboard" id="motherboard-select" required)
           each mb in motherboards
             option(value=mb.name + ' - $' + mb.price) #{mb.name} - $#{mb.price}
-
 
       .form-row
         label(for="gpu") GPU
