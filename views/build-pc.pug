@@ -37,8 +37,9 @@ block content
       .form-row
         label(for="case") Case
         select(name="case" id="case-select")
-          each case in cases
-            option(value=case.id) #{case.name} - $#{case.price}
+          each caseItem in cases
+            option(value=caseItem.id) #{caseItem.name} - $#{caseItem.price}
+
 
       .form-row
         label(for="case-fan") Case Fan
