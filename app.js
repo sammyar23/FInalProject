@@ -70,7 +70,7 @@ app.get('/api/components/cpu', async (req, res) => {
     res.send('Build submitted successfully!'); // Or res.redirect('/some-page');
   });
   
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+//app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
   
   
   
