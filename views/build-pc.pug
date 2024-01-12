@@ -6,8 +6,12 @@ block content
     h1.build-title Build Your PC
 
   form.form-section(action="/submit-build" method="post")
+    form.form-section(action="/submit-build" method="post")
     fieldset
-      legend Choose Your Components
+      legend Name Your Build
+      .form-row
+        label(for="build-name") Build Name
+        input(type="text" name="buildName" id="build-name" placeholder="Enter a name for your build" required)
 
       .form-row
         label(for="cpu") CPU
