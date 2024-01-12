@@ -1,10 +1,17 @@
 doctype html
 html
   head
-    // Correct usage of self-closing link tag in Pug
-    link(rel='stylesheet', href='/style.css')
+    title Your Website Title
+    link(rel='stylesheet', href='/styles.css')
+    // Other head elements
   body
+    header
+      img(src='/techcrafters.png', alt='TechCrafters Logo', id='logo')
+      // Rest of the header content
+
     block content
+
     footer
-      .container
-        p © 2024 TechCrafters. All rights reserved.
+      p © 2024 TechCrafters. All rights reserved.
+
+    // Additional scripts or footer elements

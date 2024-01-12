@@ -24,7 +24,7 @@ block content
       label(for="memory") Memory
       select(name="memory" id="memory-select")
         each mem in memory
-          option(value=mem.id) #{mem.size} - $#{mem.price}
+          option(value=mem.id) #{mem.name} - $#{mem.price}
 
       // Add fields for other components as needed
 
