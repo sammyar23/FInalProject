@@ -22,24 +22,39 @@ app.get('/api/components/cpu', async (req, res) => {
       res.status(500).send('Internal Server Error');
     }
   });
-  
-  app.get('/build-pc', async (req, res) => {
+
+  app.get('/api/components/motherboard', async (req, res) => {
     try {
-      // Read the CPU data as an example
-      const cpuData = await fs.readFile('./data/json/updated-cpu.json', 'utf8');
-      const cpus = JSON.parse(cpuData);
-  
-      // You would do the same for other components, like GPUs, memory, etc.
-      // const gpuData = await fs.readFile('./data/json/gpu.json', 'utf8');
-      // const gpus = JSON.parse(gpuData);
-  
-      // Then pass all the data to your Pug template
-      res.render('build-pc', { cpus: cpus /*, gpus: gpus, ... */ });
+      const data = await fs.readFile('./data/json/updated-motherboard.json', 'utf8');
+      const motherboards = JSON.parse(data);
+      const socket = req.query.socket;
+      const compatibleMotherboards = motherboards.filter(mb => mb.socket === socket);
+      res.json(compatibleMotherboards);
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
     }
   });
+  
+  
+  app.get('/build-pc', async (req, res) => {
+    try {
+      // Read the CPU data
+      const cpuData = await fs.readFile('./data/json/updated-cpu.json', 'utf8');
+      const cpus = JSON.parse(cpuData);
+  
+      // Read the Motherboard data
+      const motherboardData = await fs.readFile('./data/json/updated-motherboard.json', 'utf8');
+      const motherboards = JSON.parse(motherboardData);
+  
+      // Pass both CPU and Motherboard data to your Pug template
+      res.render('build-pc', { cpus: cpus, motherboards: motherboards });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
   
 
 
