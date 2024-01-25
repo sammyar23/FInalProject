@@ -18,7 +18,8 @@ block content
         label(for="cpu") CPU
         select(name="cpu" id="cpu-select" required)
           each cpu in cpus
-            option(value=cpu.name + ' - $' + cpu.price) #{cpu.name} - $#{cpu.price}
+            option(value=cpu.name + ' - $' + cpu.price data-socket=cpu.socket) #{cpu.name} - $#{cpu.price}
+
 
       .form-row
         label(for="motherboard") Motherboard

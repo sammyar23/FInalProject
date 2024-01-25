@@ -1,10 +1,9 @@
 document.getElementById('cpu-select').addEventListener('change', function(event) {
-  const selectedSocket = event.target.value;
+  const selectedSocket = this.options[this.selectedIndex].getAttribute('data-socket'); // Assuming you have a data-socket attribute on your CPU options
 
   fetch(`/api/components/motherboard?socket=${selectedSocket}`)
     .then(response => response.json())
     .then(motherboards => {
-      console.log('Motherboards:', motherboards); // Log to see what you get from the server
       const motherboardSelect = document.getElementById('motherboard-select');
       motherboardSelect.innerHTML = ''; // Clear existing options
       motherboards.forEach(motherboard => {
