@@ -25,9 +25,9 @@ block content
       .form-row
         label(for="motherboard") Motherboard
         select(name="motherboard" id="motherboard-select" required)
-          each mb in motherboards
-            if mb.socket && mb.price
-              option(value=mb.name + ' - $' + mb.price) #{mb.name} - #{mb.price}
+         each mb in motherboards
+          if mb.price != null
+             option(value=mb.name + ' - $' + mb.price) #{mb.name} - #{mb.price}
 
 
       .form-row
