@@ -4,7 +4,7 @@ document.getElementById('build-form').addEventListener('submit', function(event)
     // Gather data from form selections
     const selectedCpu = document.getElementById('cpu-select').value;
     const selectedMotherboard = document.getElementById('motherboard-select').value;
-    // Continue for other components...
+    
   
     // Create a confirmation message
     const confirmMessage = `You have selected:\nCPU: ${selectedCpu}\nMotherboard: ${selectedMotherboard}\n...Continue?`;
