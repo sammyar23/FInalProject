@@ -1,32 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Function to update the total price
-    const updateTotalPrice = () => {
+    const componentSelects = document.querySelectorAll('#cpu-select, #motherboard-select, #gpu-select, #memory-select, #case-select, #case-fan-select, #cpu-cooler-select, #internal-hard-drive-select, #power-supply-select, #sound-card-select');
+    const totalPriceElement = document.getElementById('total-price');
+  
+    function updateTotalPrice() {
       let totalPrice = 0;
-  
-      // Find all the select elements for components
-      const selects = document.querySelectorAll('.form-section select');
-      
-      // Loop over each select and add the selected option's price to the total
-      selects.forEach(select => {
-        const selectedOption = select.options[select.selectedIndex];
-        if (selectedOption && selectedOption.getAttribute('data-price')) {
-          const price = parseFloat(selectedOption.getAttribute('data-price'));
-          if (!isNaN(price)) {
-            totalPrice += price;
-          }
-        }
+      componentSelects.forEach(select => {
+        const price = select.options[select.selectedIndex].dataset.price;
+        totalPrice += parseFloat(price || 0);
       });
+      totalPriceElement.textContent = totalPrice.toFixed(2);
+    }
   
-      // Update the total price on the page
-      document.getElementById('total-price').textContent = totalPrice.toFixed(2);
-    };
-  
-    // Attach the updateTotalPrice function to the change event of each select element
-    document.querySelectorAll('.form-section select').forEach(select => {
+    componentSelects.forEach(select => {
       select.addEventListener('change', updateTotalPrice);
     });
   
-    // Initialize the total price when the page loads
+    // Initial calculation in case there are default selections
     updateTotalPrice();
   });
   
