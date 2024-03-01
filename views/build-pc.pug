@@ -1,5 +1,3 @@
-extends layout
-
 block content
   div.header-container
     img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
@@ -13,23 +11,21 @@ block content
         input(type="text" name="buildName" id="build-name" placeholder="Enter a name for your build" required)
 
       legend Choose Your Components
-
+      // CPU selection
       .form-row
         label(for="cpu") CPU
         select(name="cpu" id="cpu-select" required)
           each cpu in cpus
             if cpu.socket && cpu.price
-              option(value=cpu.name + ' - $' + cpu.price data-socket=cpu.socket) #{cpu.name} - #{cpu.price}
+              option(value=cpu.name data-socket=cpu.socket data-price=cpu.price) #{cpu.name} - $#{cpu.price}
 
-
+      // Motherboard selection
       .form-row
         label(for="motherboard") Motherboard
         select(name="motherboard" id="motherboard-select" required)
-         each mb in motherboards
-          if mb.price != null
-             option(value=mb.name + ' - $' + mb.price) #{mb.name} - #{mb.price}
-
-
+          each mb in motherboards
+            if mb.price != null
+              option(value=mb.name data-price=mb.price) #{mb.name} - $#{mb.price}
       .form-row
         label(for="gpu") GPU
         select(name="gpu" id="gpu-select")
@@ -86,6 +82,12 @@ block content
         span Total Build Price: $
         span#total-price 0
 
+      // Total Price display
+      .form-row.total-price
+        span Total Build Price: $
+        span#total-price 0
+
+// Including JavaScript files
 script(src='/js/updateComponents.js')
 script(src='/js/buildPcFormHandler.js')
-#script(src='/js/calculateTotalPrice.js')
+script(src='/js/calculateTotalPrice.js')
