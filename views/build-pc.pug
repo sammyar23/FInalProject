@@ -63,11 +63,12 @@ block content
       each psu in power_supplies
         option(value=psu.id data-price=psu.price) #{psu.name} - $#{psu.price}
 
-      .form-row
-        label(for="sound-card") Sound Card
-        select(name="sound-card" id="sound-card-select")
-          each sc in sound_cards
-            option(value=sc.id) #{sc.name} - $#{sc.price}
+  .form-row
+    label(for="sound-card") Sound Card
+    select(name="sound-card" id="sound-card-select")
+      each sc in sound_cards
+        option(value=sc.id data-price=sc.price) #{sc.name} - $#{sc.price}
+
 
       input.form-button(type="submit" value="Build")
 
