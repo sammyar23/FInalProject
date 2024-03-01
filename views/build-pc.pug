@@ -19,56 +19,49 @@ block content
             if cpu.socket && cpu.price
               option(value=cpu.name data-socket=cpu.socket data-price=cpu.price) #{cpu.name} - $#{cpu.price}
 
-      // Motherboard selection
-      .form-row
-        label(for="motherboard") Motherboard
-        select(name="motherboard" id="motherboard-select" required)
-          each mb in motherboards
-            if mb.price != null
-              option(value=mb.name data-price=mb.price) #{mb.name} - $#{mb.price}
-      .form-row
-        label(for="gpu") GPU
-        select(name="gpu" id="gpu-select")
-          each gpu in gpus
-            option(value=gpu.id) #{gpu.name} - $#{gpu.price}
 
-      .form-row
-        label(for="memory") Memory
-        select(name="memory" id="memory-select")
-          each mem in memory
-            option(value=mem.id) #{mem.name} - $#{mem.price}
+  .form-row
+    label(for="gpu") GPU
+    select(name="gpu" id="gpu-select")
+      each gpu in gpus
+        option(value=gpu.id data-price=gpu.price) #{gpu.name} - $#{gpu.price}
 
-      // The rest of the components follow a similar pattern
-      .form-row
-        label(for="case") Case
-        select(name="case" id="case-select")
-          each caseItem in cases
-            option(value=caseItem.id) #{caseItem.name} - $#{caseItem.price}
+  .form-row
+    label(for="memory") Memory
+    select(name="memory" id="memory-select")
+      each mem in memory
+        option(value=mem.id data-price=mem.price) #{mem.name} - $#{mem.price}
 
+  // Continue with the same pattern for other components:
+  .form-row
+    label(for="case") Case
+    select(name="case" id="case-select")
+      each caseItem in cases
+        option(value=caseItem.id data-price=caseItem.price) #{caseItem.name} - $#{caseItem.price}
 
-      .form-row
-        label(for="case-fan") Case Fan
-        select(name="case-fan" id="case-fan-select")
-          each fan in case_fans
-            option(value=fan.id) #{fan.name} - $#{fan.price}
+  .form-row
+    label(for="case-fan") Case Fan
+    select(name="case-fan" id="case-fan-select")
+      each fan in case_fans
+        option(value=fan.id data-price=fan.price) #{fan.name} - $#{fan.price}
 
-      .form-row
-        label(for="cpu-cooler") CPU Cooler
-        select(name="cpu-cooler" id="cpu-cooler-select")
-          each cooler in cpu_coolers
-            option(value=cooler.id) #{cooler.name} - $#{cooler.price}
+  .form-row
+    label(for="cpu-cooler") CPU Cooler
+    select(name="cpu-cooler" id="cpu-cooler-select")
+      each cooler in cpu_coolers
+        option(value=cooler.id data-price=cooler.price) #{cooler.name} - $#{cooler.price}
 
-      .form-row
-        label(for="internal-hard-drive") Internal Hard Drive
-        select(name="internal-hard-drive" id="internal-hard-drive-select")
-          each hdd in internal_hard_drives
-            option(value=hdd.id) #{hdd.name} - $#{hdd.price}
+  .form-row
+    label(for="internal-hard-drive") Internal Hard Drive
+    select(name="internal-hard-drive" id="internal-hard-drive-select")
+      each hdd in internal_hard_drives
+        option(value=hdd.id data-price=hdd.price) #{hdd.name} - $#{hdd.price}
 
-      .form-row
-        label(for="power-supply") Power Supply
-        select(name="power-supply" id="power-supply-select")
-          each psu in power_supplies
-            option(value=psu.id) #{psu.name} - $#{psu.price}
+  .form-row
+    label(for="power-supply") Power Supply
+    select(name="power-supply" id="power-supply-select")
+      each psu in power_supplies
+        option(value=psu.id data-price=psu.price) #{psu.name} - $#{psu.price}
 
       .form-row
         label(for="sound-card") Sound Card
