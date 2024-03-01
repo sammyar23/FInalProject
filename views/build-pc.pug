@@ -1,24 +1,4 @@
-header
-      .container
-      head
-        title Your Website Title
-        link(rel='stylesheet', href='/style.css')
-        // Other head elements
-      body
-        .logo-container
-          img#logo(src='/techcrafters.png', alt='TechCrafters Logo')
-        nav
-          ul.nav-list
-            li.nav-item
-              a(href="/") Home
-            li.nav-item
-              a(href="/forum") Forum
-            li.nav-item
-              a(href="/build-pc") Build PC
-            li.nav-item
-              a(href="/recommend-pc") Recommended PCs
-            li.nav-item
-              a(href="/info-help") Info/Help
+extends layout
 
 block content
   header
@@ -102,7 +82,6 @@ block content
           span Total Build Price: $
           span#total-price 0
 
+  
+
 // Including JavaScript files
-script(src='/js/updateComponents.js')
-script(src='/js/buildPcFormHandler.js')
-script(src='/js/calculateTotalPrice.js')
