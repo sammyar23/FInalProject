@@ -1,9 +1,6 @@
 extends layout
 
 block content
-  header
-    h1.build-title Name & Build Your PC
-
   form.form-section(action="/submit-build" method="post")
     fieldset
       legend Name Your Build
@@ -77,11 +74,5 @@ block content
           span Total Build Price: $
           span#total-price 0
 
-        // Total Price display
-        .form-row.total-price
-          span Total Build Price: $
-          span#total-price 0
-
-  
 
 // Including JavaScript files
