@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title Your Website Title
+    title Tech Crafters - Build PC
     link(rel='stylesheet', href='/style.css')  
   body
     header
@@ -15,7 +15,12 @@ html
             li.nav-item: a(href="/build-pc") Build PC
             li.nav-item: a(href="/recommend-pc") Recommended PCs
             li.nav-item: a(href="/info-help") Info/Help
-    // The block content is where the specific page content will go
+            if user
+              li.nav-item: a(href="/logout") Logout #{user.username}
+            else
+              li.nav-item: a(href="/login") Login
+              li.nav-item: a(href="/register") Sign Up
     block content
+
     footer
       p © 2024 TechCrafters. All rights reserved.
