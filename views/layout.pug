@@ -15,8 +15,10 @@ html
             li.nav-item: a(href="/build-pc") Build PC
             li.nav-item: a(href="/recommend-pc") Recommended PCs
             li.nav-item: a(href="/info-help") Info/Help
-            if user
-              li.nav-item: a(href="/logout") Logout #{user.username}
+            if currentUser
+              li.nav-item
+                a(href="/logout") Logout
+                span #{currentUser.username}
             else
               li.nav-item: a(href="/login") Login
               li.nav-item: a(href="/register") Sign Up
