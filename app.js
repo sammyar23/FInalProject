@@ -13,7 +13,7 @@ mongoose.connect('mongodb+srv://aroraf:S@mmy22321@techtipsdata.kgv0wyd.mongodb.n
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Define the port variable
-const port = process.env.PORT || 3000; // Use the provided port or default to 3000
+const port = process.env.PORT || 8080; // Use the provided port or default to 3000
 
 // Set Pug as the view engine
 app.set('view engine', 'pug');
