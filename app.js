@@ -9,7 +9,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 
 // Connect to MongoDB
-mongoose.connect('your-mongodb-uri', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://aroraf:S@mmy22321@techtipsdata.kgv0wyd.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Define the port variable
@@ -46,7 +46,7 @@ passport.use(new LocalStrategy(
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
   User.findById(id, (err, user) => done(err, user));
-}));
+});
 
 // Initialize passport
 app.use(passport.initialize());
