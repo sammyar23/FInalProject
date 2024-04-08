@@ -2,24 +2,120 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const fs = require('fs').promises;
+const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
+
+// Connect to MongoDB
+mongoose.connect('your-mongodb-uri', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Define the port variable
 const port = process.env.PORT || 3000; // Use the provided port or default to 3000
 
-
-
 // Set Pug as the view engine
 app.set('view engine', 'pug');
-
-
-// Note: When running on Azure, __dirname will be /home/site/wwwroot if app.js is in the root
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+// Session configuration
+app.use(session({ 
+  secret: 'secret', 
+  resave: false, 
+  saveUninitialized: true,
+  cookie: { maxAge: 60000 }
+}));
+
+// Passport configuration
+passport.use(new LocalStrategy(
+  async (username, password, done) => {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return done(null, false, { message: 'Incorrect username.' });
+    }
+    if (!bcrypt.compareSync(password, user.password)) {
+      return done(null, false, { message: 'Incorrect password.' });
+    }
+    return done(null, user);
+  }
+));
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => done(err, user));
+}));
+
+// Initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// User schema
+const UserSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  builds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Build' }]
+});
+const User = mongoose.model('User', UserSchema);
+
+// Build schema
+const BuildSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  components: Object
+});
+const Build = mongoose.model('Build', BuildSchema);
+
+// Routes for homepage
 app.get('/', (req, res) => res.render('home'));
 app.get('/home', (req, res) => res.render('home'));
+
+
+// Routes for user registration
+app.get('/register', (req, res) => res.render('register'));
+app.post('/register', async (req, res) => {
+  try {
+    const hashedPassword = bcrypt.hashSync(req.body.password, 12);
+    const newUser = new User({ username: req.body.username, password: hashedPassword });
+    await newUser.save();
+    res.redirect('/login');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error registering new user.');
+  }
+});
+
+// Routes for user login
+app.get('/login', (req, res) => res.render('login'));
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login'
+}));
+
+// Route for saving builds
+app.post('/save-build', async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const newBuild = new Build({ user: req.user._id, components: req.body });
+      await newBuild.save();
+      req.user.builds.push(newBuild);
+      await req.user.save();
+      res.send('Build saved successfully!');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error saving build.');
+    }
+  } else {
+    res.redirect('/login');
+  }
+});
+
+// Logout route
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
+});
 
 
 app.get('/api/components/cpu', async (req, res) => {
