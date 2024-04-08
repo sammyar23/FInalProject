@@ -9,7 +9,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://aroraf:S@mmy22321@kgv0wyd.mongodb.net/techtipsdata?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://aroraf:<password>@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority&appName=TechTipsData', { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Define the port variable
