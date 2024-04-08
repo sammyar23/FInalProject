@@ -15,13 +15,11 @@ html
             li.nav-item: a(href="/build-pc") Build PC
             li.nav-item: a(href="/recommend-pc") Recommended PCs
             li.nav-item: a(href="/info-help") Info/Help
-
+    // The block content is where the specific page content will go
     block content
-
     footer
       p © 2024 TechCrafters. All rights reserved.
-
-    //  scripts or  elements
-script(src='/js/updateComponents.js')
-script(src='/js/buildPcFormHandler.js')
-script(src='/js/calculateTotalPrice.js')
+    // Including the JavaScript files for functionality
+    script(src='/js/updateComponents.js')
+    script(src='/js/buildPcFormHandler.js')
+    script(src='/js/calculateTotalPrice.js')
