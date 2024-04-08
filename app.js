@@ -88,10 +88,27 @@ app.post('/register', async (req, res) => {
 
 // Routes for user login
 app.get('/login', (req, res) => res.render('login'));
-app.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login'
-}));
+
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      console.error('Authentication error:', err);
+      return next(err);
+    }
+    if (!user) {
+      console.error('Login failed, user:', user, 'info:', info);
+      return res.render('login', { message: info.message });
+    }
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error('Error logging in:', loginErr);
+        return next(loginErr);
+      }
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
+
 
 // Route for saving builds
 app.post('/save-build', async (req, res) => {
