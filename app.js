@@ -103,40 +103,52 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/save-build', async (req, res) => {
-  if (!req.isAuthenticated()) return res.redirect('/login');
-  const newBuild = new Build({ user: req.user._id, components: req.body });
-  await newBuild.save();
-  req.user.builds.push(newBuild._id);
-  await req.user.save();
-  res.redirect('/saved-builds');
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login');
+  }
+  try {
+    const newBuild = new Build({ user: req.user._id, components: req.body.components, name: req.body.buildName });
+    await newBuild.save();
+    req.user.builds.push(newBuild._id);
+    await req.user.save();
+    res.redirect('/saved-builds');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error saving build.');
+  }
 });
 
 // Assuming each component of the build has a 'price' field
 app.get('/saved-builds', async (req, res) => {
-  if (!req.isAuthenticated()) return res.redirect('/login');
-
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login');
+  }
   try {
     const userWithBuilds = await User.findById(req.user._id).populate({
       path: 'builds',
-      populate: { path: 'components' } // Assuming 'components' is a reference to another schema
+      populate: {
+        path: 'components.component' // Adjust according to your schema
+      }
     });
 
     const builds = userWithBuilds.builds.map(build => {
-      // Calculate the total price of the build
-      const totalAmount = build.components.reduce((sum, component) => sum + component.price, 0);
+      // Assuming build.components is an array of { component: ObjectId, quantity: Number }
+      const totalAmount = build.components.reduce((sum, { component, quantity }) => {
+        return sum + (component.price * quantity);
+      }, 0);
+
       return {
-        ...build.toObject(), // Convert mongoose document to a plain JavaScript object
+        name: build.name,
         amount: totalAmount // Add the calculated amount here
       };
     });
 
-    res.render('saved-builds', { builds: builds });
+    res.render('saved-builds', { builds });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching builds.');
   }
 });
-
 
 // Logout route
 app.get('/logout', (req, res) => {
