@@ -73,6 +73,12 @@ const BuildSchema = new mongoose.Schema({
 });
 const Build = mongoose.model('Build', BuildSchema);
 
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
+
 // Routes for homepage
 app.get('/', (req, res) => res.render('home'));
 app.get('/home', (req, res) => res.render('home'));
