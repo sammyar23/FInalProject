@@ -2,7 +2,7 @@ doctype html
 html
   head
     title Tech Crafters - Build PC
-    link(rel='stylesheet', href='/style.css')  
+    link(rel='stylesheet', href='/style.css')
   body
     header
       .container
@@ -16,9 +16,7 @@ html
             li.nav-item: a(href="/recommend-pc") Recommended PCs
             li.nav-item: a(href="/info-help") Info/Help
             if currentUser
-              li.nav-item
-                a(href="/logout") Logout
-                span #{currentUser.username}
+              li.nav-item: a(href="/logout") Logout (#{currentUser.username})
             else
               li.nav-item: a(href="/login") Login
               li.nav-item: a(href="/register") Sign Up
@@ -26,4 +24,3 @@ html
 
     footer
       p © 2024 TechCrafters. All rights reserved.
-//a
