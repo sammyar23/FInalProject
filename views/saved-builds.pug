@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 My Saved Builds
+  ul.builds-list
+    each build in builds
+      li
+        h2= build.name
+        // Add more details about the build here
+        // For example, you might list components or total price
