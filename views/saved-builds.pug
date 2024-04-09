@@ -5,8 +5,5 @@ block content
   ul.builds-list
     each build in builds
       li
-        h2 Build Name: #{build.name}
-        if build.amount
-          p Total Amount: $#{build.amount}
-        else
-          p Total Amount: Calculation needed
+        h2= build.name
+        p Total Amount: $#{build.amount}
