@@ -225,5 +225,34 @@ app.get('/api/components/cpu', async (req, res) => {
     res.send('Build submitted successfully!');
   });
   
+  app.post('/save-build', async (req, res) => {
+    if (!req.isAuthenticated()) return res.redirect('/login');
+    
+    try {
+      const newBuild = new Build({ user: req.user._id, components: req.body });
+      await newBuild.save();
+      req.user.builds.push(newBuild._id);
+      await req.user.save();
+      res.redirect('/saved-builds'); // Redirect to the saved builds page
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error saving build.');
+    }
+  });
+  
+
+  app.get('/saved-builds', async (req, res) => {
+    if (!req.isAuthenticated()) return res.redirect('/login');
+  
+    try {
+      // Assuming User model has a 'builds' field that stores Build IDs
+      const userWithBuilds = await User.findById(req.user._id).populate('builds');
+      res.render('saved-builds', { builds: userWithBuilds.builds });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error fetching builds.');
+    }
+  });
+  
 // Start the server on the defined port
 app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
