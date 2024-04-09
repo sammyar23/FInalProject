@@ -9,24 +9,24 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 
-// Connect to MongoDB
+// Connect to MongoDB with the correct user information.
 mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority&appName=TechTipsData', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-// Define the port variable
+// Define the port variable.
 const port = process.env.PORT || 8080;
 
-// Set Pug as the view engine
+// Set Pug as the view engine.
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
-// Session configuration
+// Session configuration.
 app.use(session({
   secret: 'secret',
   resave: false,
@@ -34,14 +34,15 @@ app.use(session({
   cookie: { maxAge: 60000 }
 }));
 
-// Passport configuration
+// Passport configuration.
 passport.use(new LocalStrategy(
   async (username, password, done) => {
-    const user = await User.findOne({ username });
+    // Use the correct model method to find a user.
+    const user = await User.findOne({ username: username });
     if (!user) {
       return done(null, false, { message: 'Incorrect username.' });
     }
-    if (!bcrypt.compareSync(password, user.password)) {
+    if (!await bcrypt.compare(password, user.password)) {
       return done(null, false, { message: 'Incorrect password.' });
     }
     return done(null, user);
@@ -50,6 +51,7 @@ passport.use(new LocalStrategy(
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
+  // Use try-catch for async operations.
   try {
     const user = await User.findById(id);
     done(null, user);
@@ -61,7 +63,7 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// User schema
+// User schema.
 const UserSchema = new mongoose.Schema({
   username: String,
   password: String,
@@ -69,38 +71,26 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', UserSchema);
 
-// Build schema
+// Build schema.
 const BuildSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  components: Object
+  components: [{ // Ensure components is an array if it contains multiple items.
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Component'
+  }],
+  name: String, // Add name property if it's expected to be part of a build.
+  // Add a price property if you want to store the total price of the build.
+  price: Number
 });
 const Build = mongoose.model('Build', BuildSchema);
 
-// Middleware to make user object available in all templates
+// Middleware to make the user object available in all templates.
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
 });
 
-// Routes
-app.get('/', (req, res) => res.render('home'));
-
-app.get('/register', (req, res) => res.render('register'));
-app.post('/register', async (req, res) => {
-  const hashedPassword = bcrypt.hashSync(req.body.password, 12);
-  const newUser = new User({ username: req.body.username, password: hashedPassword });
-  await newUser.save();
-  res.redirect('/login');
-});
-
-app.get('/login', (req, res) => res.render('login'));
-app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }),
-  (req, res) => res.redirect('/'));
-
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-});
+// Define routes here.
 
 app.post('/save-build', async (req, res) => {
   if (!req.isAuthenticated()) {
