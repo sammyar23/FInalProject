@@ -9,45 +9,57 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority', {
+// Replace <user>:<password>@<cluster-url> with your MongoDB Atlas credentials
+const dbConnectionString = 'mongodb+srv://<user>:<password>@<cluster-url>/?retryWrites=true&w=majority';
+mongoose.connect(dbConnectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-// Define the port variable
-const port = process.env.PORT || 8080;
+// Rest of the code...
 
-// Set Pug as the view engine
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
+// Properly structured Build schema based on your data
+const BuildSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  components: [{
+    component: { type: mongoose.Schema.Types.ObjectId, ref: 'Component' },
+    quantity: Number
+  }],
+  name: String,
+  price: Number
+});
+const Build = mongoose.model('Build', BuildSchema);
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
+// Rest of the code...
 
-// Session configuration
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 60000 }
-}));
-
-// Passport configuration
-passport.use(new LocalStrategy(
-  async (username, password, done) => {
-    const user = await User.findOne({ username });
-    if (!user) {
-      return done(null, false, { message: 'Incorrect username.' });
-    }
-    if (!bcrypt.compareSync(password, user.password)) {
-      return done(null, false, { message: 'Incorrect password.' });
-    }
-    return done(null, user);
+// Fetch saved builds with proper population of the components
+app.get('/saved-builds', async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login');
   }
-));
 
+  try {
+    const userWithBuilds = await User.findById(req.user._id).populate({
+      path: 'builds',
+      populate: { path: 'components.component' }
+    });
+
+    const builds = userWithBuilds.builds.map(build => {
+      const totalAmount = build.components.reduce((sum, { component, quantity }) => {
+        return sum + (component.price * quantity);
+      }, 0);
+      return { ...build.toObject(), amount: totalAmount };
+    });
+
+    res.render('saved-builds', { builds });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching builds.');
+  }
+});
+
+// Ensure you have error handling for the serialization and deserialization
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
@@ -56,30 +68,6 @@ passport.deserializeUser(async (id, done) => {
   } catch (error) {
     done(error);
   }
-});
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// User schema
-const UserSchema = new mongoose.Schema({
-  username: String,
-  password: String,
-  builds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Build' }]
-});
-const User = mongoose.model('User', UserSchema);
-
-// Build schema
-const BuildSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  components: Object // This should be adjusted to your schema.
-});
-const Build = mongoose.model('Build', BuildSchema);
-
-// Middleware to make user object available in all templates
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  next();
 });
 
 // Routes
