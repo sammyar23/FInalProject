@@ -111,10 +111,30 @@ app.post('/save-build', async (req, res) => {
   res.redirect('/saved-builds');
 });
 
+// Assuming each component of the build has a 'price' field
 app.get('/saved-builds', async (req, res) => {
   if (!req.isAuthenticated()) return res.redirect('/login');
-  const userWithBuilds = await User.findById(req.user._id).populate('builds');
-  res.render('saved-builds', { builds: userWithBuilds.builds });
+
+  try {
+    const userWithBuilds = await User.findById(req.user._id).populate({
+      path: 'builds',
+      populate: { path: 'components' } // Assuming 'components' is a reference to another schema
+    });
+
+    const builds = userWithBuilds.builds.map(build => {
+      // Calculate the total price of the build
+      const totalAmount = build.components.reduce((sum, component) => sum + component.price, 0);
+      return {
+        ...build.toObject(), // Convert mongoose document to a plain JavaScript object
+        amount: totalAmount // Add the calculated amount here
+      };
+    });
+
+    res.render('saved-builds', { builds: builds });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching builds.');
+  }
 });
 
 
