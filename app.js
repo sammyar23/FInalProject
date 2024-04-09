@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority&appName=TechTipsData', {
+mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -72,7 +72,7 @@ const User = mongoose.model('User', UserSchema);
 // Build schema
 const BuildSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  components: Object
+  components: Object // This should be adjusted to your schema.
 });
 const Build = mongoose.model('Build', BuildSchema);
 
@@ -103,52 +103,35 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/save-build', async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/login');
-  }
-  try {
-    const newBuild = new Build({ user: req.user._id, components: req.body.components, name: req.body.buildName });
-    await newBuild.save();
-    req.user.builds.push(newBuild._id);
-    await req.user.save();
-    res.redirect('/saved-builds');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error saving build.');
-  }
+  if (!req.isAuthenticated()) return res.redirect('/login');
+  const newBuild = new Build({ user: req.user._id, components: req.body });
+  await newBuild.save();
+  req.user.builds.push(newBuild._id);
+  await req.user.save();
+  res.redirect('/saved-builds');
 });
 
-// Assuming each component of the build has a 'price' field
 app.get('/saved-builds', async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/login');
-  }
+  if (!req.isAuthenticated()) return res.redirect('/login');
+
   try {
-    const userWithBuilds = await User.findById(req.user._id).populate({
-      path: 'builds',
-      populate: {
-        path: 'components.component' // Adjust according to your schema
-      }
-    });
-
+    const userWithBuilds = await User.findById(req.user._id).populate('builds');
+    // Assuming each build has a 'components' array with prices
     const builds = userWithBuilds.builds.map(build => {
-      // Assuming build.components is an array of { component: ObjectId, quantity: Number }
-      const totalAmount = build.components.reduce((sum, { component, quantity }) => {
-        return sum + (component.price * quantity);
-      }, 0);
-
+      const totalAmount = build.components.reduce((sum, component) => sum + component.price, 0);
       return {
-        name: build.name,
-        amount: totalAmount // Add the calculated amount here
+        ...build.toObject(),
+        amount: totalAmount // Add a new property 'amount' with the total price
       };
     });
-
     res.render('saved-builds', { builds });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching builds.');
   }
 });
+
+
 
 // Logout route
 app.get('/logout', (req, res) => {
