@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const app = express();
 
 // Replace <user>:<password>@<cluster-url> with your MongoDB Atlas credentials
-const dbConnectionString = 'mongodb+srv://<user>:<password>@<cluster-url>/?retryWrites=true&w=majority';
+const dbConnectionString = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority';
 mongoose.connect(dbConnectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true
