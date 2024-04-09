@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const app = express();
 const fs = require('fs').promises;
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -8,24 +7,29 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 
+const app = express();
+
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority&appName=TechTipsData', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority&appName=TechTipsData', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Define the port variable
-const port = process.env.PORT || 8080; // Use the provided port or default to 3000
+const port = process.env.PORT || 8080;
 
 // Set Pug as the view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
-app.use(session({ 
-  secret: 'secret', 
-  resave: false, 
+app.use(session({
+  secret: 'secret',
+  resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 60000 }
 }));
@@ -43,6 +47,7 @@ passport.use(new LocalStrategy(
     return done(null, user);
   }
 ));
+
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
@@ -53,8 +58,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-
-// Initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -73,72 +76,47 @@ const BuildSchema = new mongoose.Schema({
 });
 const Build = mongoose.model('Build', BuildSchema);
 
-
+// Middleware to make user object available in all templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
 });
 
-// Routes for homepage
+// Routes
 app.get('/', (req, res) => res.render('home'));
-app.get('/home', (req, res) => res.render('home'));
 
-
-// Routes for user registration
 app.get('/register', (req, res) => res.render('register'));
 app.post('/register', async (req, res) => {
-  try {
-    const hashedPassword = bcrypt.hashSync(req.body.password, 12);
-    const newUser = new User({ username: req.body.username, password: hashedPassword });
-    await newUser.save();
-    res.redirect('/login');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error registering new user.');
-  }
+  const hashedPassword = bcrypt.hashSync(req.body.password, 12);
+  const newUser = new User({ username: req.body.username, password: hashedPassword });
+  await newUser.save();
+  res.redirect('/login');
 });
 
-// Routes for user login
 app.get('/login', (req, res) => res.render('login'));
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }),
+  (req, res) => res.redirect('/'));
 
-app.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) {
-      console.error('Authentication error:', err);
-      return next(err);
-    }
-    if (!user) {
-      console.error('Login failed, user:', user, 'info:', info);
-      return res.render('login', { message: info.message });
-    }
-    req.logIn(user, (loginErr) => {
-      if (loginErr) {
-        console.error('Error logging in:', loginErr);
-        return next(loginErr);
-      }
-      return res.redirect('/');
-    });
-  })(req, res, next);
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
 });
 
-
-// Route for saving builds
 app.post('/save-build', async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      const newBuild = new Build({ user: req.user._id, components: req.body });
-      await newBuild.save();
-      req.user.builds.push(newBuild);
-      await req.user.save();
-      res.send('Build saved successfully!');
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error saving build.');
-    }
-  } else {
-    res.redirect('/login');
-  }
+  if (!req.isAuthenticated()) return res.redirect('/login');
+  const newBuild = new Build({ user: req.user._id, components: req.body });
+  await newBuild.save();
+  req.user.builds.push(newBuild._id);
+  await req.user.save();
+  res.redirect('/saved-builds');
 });
+
+app.get('/saved-builds', async (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/login');
+  const userWithBuilds = await User.findById(req.user._id).populate('builds');
+  res.render('saved-builds', { builds: userWithBuilds.builds });
+});
+
 
 // Logout route
 app.get('/logout', (req, res) => {
@@ -215,42 +193,6 @@ app.get('/api/components/cpu', async (req, res) => {
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
-    }
-  });
-  
-
-  app.post('/submit-build', (req, res) => {
-    console.log(req.body); // Log the entire body to see if you're getting the form data.
-    // ...handle the form submission...
-    res.send('Build submitted successfully!');
-  });
-  
-  app.post('/save-build', async (req, res) => {
-    if (!req.isAuthenticated()) return res.redirect('/login');
-    
-    try {
-      const newBuild = new Build({ user: req.user._id, components: req.body });
-      await newBuild.save();
-      req.user.builds.push(newBuild._id);
-      await req.user.save();
-      res.redirect('/saved-builds'); // Redirect to the saved builds page
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error saving build.');
-    }
-  });
-  
-
-  app.get('/saved-builds', async (req, res) => {
-    if (!req.isAuthenticated()) return res.redirect('/login');
-  
-    try {
-      // Assuming User model has a 'builds' field that stores Build IDs
-      const userWithBuilds = await User.findById(req.user._id).populate('builds');
-      res.render('saved-builds', { builds: userWithBuilds.builds });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error fetching builds.');
     }
   });
   
