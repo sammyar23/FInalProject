@@ -136,10 +136,11 @@ app.post('/save-build', async (req, res) => {
 
 // Logout route
 app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
 });
-
 
 app.get('/api/components/cpu', async (req, res) => {
     try {
