@@ -9,7 +9,6 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 
-// Replace <user>:<password>@<cluster-url> with your MongoDB Atlas credentials
 mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -18,7 +17,6 @@ mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection 
 
 // Rest of the code...
 
-// Properly structured Build schema based on your data
 const BuildSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   components: [{
@@ -32,7 +30,6 @@ const Build = mongoose.model('Build', BuildSchema);
 
 // Rest of the code...
 
-// Fetch saved builds with proper population of the components
 app.get('/saved-builds', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.redirect('/login');
@@ -44,9 +41,10 @@ app.get('/saved-builds', async (req, res) => {
       populate: { path: 'components.component' }
     });
 
+    // Assume each component in the build has a price property
     const builds = userWithBuilds.builds.map(build => {
-      const totalAmount = build.components.reduce((sum, { component, quantity }) => {
-        return sum + (component.price * quantity);
+      const totalAmount = build.components.reduce((sum, item) => {
+        return sum + (item.component.price * item.quantity);
       }, 0);
       return { ...build.toObject(), amount: totalAmount };
     });
@@ -55,17 +53,6 @@ app.get('/saved-builds', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching builds.');
-  }
-});
-
-// Ensure you have error handling for the serialization and deserialization
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error);
   }
 });
 
@@ -89,13 +76,26 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
+
 app.post('/save-build', async (req, res) => {
   if (!req.isAuthenticated()) return res.redirect('/login');
-  const newBuild = new Build({ user: req.user._id, components: req.body });
-  await newBuild.save();
-  req.user.builds.push(newBuild._id);
-  await req.user.save();
-  res.redirect('/saved-builds');
+
+  const newBuild = new Build({ 
+    user: req.user._id, 
+    components: req.body.components.map(c => ({ component: c.id, quantity: c.quantity })), 
+    name: req.body.buildName, 
+    price: req.body.totalPrice 
+  });
+
+  try {
+    await newBuild.save();
+    req.user.builds.push(newBuild._id);
+    await req.user.save();
+    res.redirect('/saved-builds');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error saving build.');
+  }
 });
 
 app.get('/saved-builds', async (req, res) => {
