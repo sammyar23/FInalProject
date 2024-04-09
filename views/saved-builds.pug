@@ -4,7 +4,9 @@ block content
   h1 My Saved Builds
   ul.builds-list
     each build in builds
-        li= build.name // or whatever property you expect to display
-
-        // Add more details about the build here
-        // For example, you might list components or total price
+      li
+        h2 Build Name: #{build.name}
+        if build.amount
+          p Total Amount: $#{build.amount}
+        else
+          p Total Amount: Calculation needed
