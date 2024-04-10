@@ -3,13 +3,14 @@ const path = require('path');
 const fs = require('fs').promises;
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo'); // Only one declaration is needed
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const app = express();
-app.use(express.json()); // Add this line to parse JSON bodies
 
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: true })); 
 
 // MongoDB Connection URL
 const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority';
@@ -18,6 +19,15 @@ const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongo
 
 
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+// Connect to MongoDB with options to handle deprecation warnings and set connection timeout
+mongoose.connect(mongoDbUrl, {
+  useNewUrlParser: true, // These options are deprecated and can be removed
+  useUnifiedTopology: true, // These options are deprecated and can be removed
+  serverSelectionTimeoutMS: 5000 // This will timeout the connection attempt after 5 seconds
+}).then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+mongoose.connection.on('error', err => console.error('MongoDB connection error:', err));
 
 // Define the port variable
 const port = process.env.PORT || 8080;
