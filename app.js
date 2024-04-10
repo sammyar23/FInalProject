@@ -117,15 +117,15 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/save-build', async (req, res) => {
+  console.log(req.body); // For debugging
+
   if (!req.isAuthenticated()) {
     return res.redirect('/login');
   }
 
-  // Check if the components array is provided
   if (!req.body.components || !Array.isArray(req.body.components)) {
     return res.status(400).send('Components data is missing or invalid.');
   }
-
   // Proceed with constructing the build object
   const newBuild = new Build({
     user: req.user._id,
