@@ -7,7 +7,6 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-
 const app = express();
 
 // MongoDB Connection URL
@@ -32,30 +31,25 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration with connect-mongo
 app.use(session({
-  secret: 'GeneratedRandomString',
+  secret: 'GeneratedRandomString', // Replace with your own secret, can be any string
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ 
-    mongoUrl: 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority'
-  }),
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 // 24 hours
-  }
+  store: MongoStore.create({ mongoUrl }),
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
-
 
 // Passport initialization and session connection
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Passport configuration
+// Passport configuration
 passport.use(new LocalStrategy(
   async (username, password, done) => {
     const user = await User.findOne({ username });
     if (!user) {
       return done(null, false, { message: 'Incorrect username.' });
     }
-    if (!bcrypt.compareSync(password, user.password)) {
+    if (!await bcrypt.compare(password, user.password)) {
       return done(null, false, { message: 'Incorrect password.' });
     }
     return done(null, user);
