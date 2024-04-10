@@ -7,7 +7,7 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-const MongoStore = require('connect-mongo');
+
 const app = express();
 
 // MongoDB Connection URL
