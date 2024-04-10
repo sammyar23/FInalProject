@@ -1,25 +1,27 @@
-document.getElementById('build-form').addEventListener('submit', function(event) {
+ddocument.getElementById('build-form').addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent form from submitting immediately
 
   // Collecting all selected components
   let components = [];
-  // Assume you have select elements with ids corresponding to each component type
   const componentTypes = ['cpu', 'motherboard', 'gpu', 'memory', 'case', 'case-fan', 'cpu-cooler', 'internal-hard-drive', 'power-supply', 'sound-card'];
   
-  componentTypes.forEach(type => {
+  for (const type of componentTypes) {
     const selectElement = document.getElementById(`${type}-select`);
     if (selectElement) {
       const selectedOption = selectElement.options[selectElement.selectedIndex];
       if (selectedOption && selectedOption.value) {
-        components.push({
-          type: type,
-          id: selectedOption.value, // Assuming the value of the option is the component ID
-          price: parseFloat(selectedOption.dataset.price), // Assuming you have data-price attributes on your options
-          quantity: 1 // If you need to handle quantity, you'll need to adjust this
-        });
+        // Assuming that the value attribute contains the component name
+        const name = selectedOption.value;
+        // Check if price data attribute exists and is a valid number
+        let price = selectedOption.dataset.price ? parseFloat(selectedOption.dataset.price) : 0;
+        if (isNaN(price)) {
+          console.error(`Invalid price for component type: ${type}, name: ${name}`);
+          price = 0; // Set a default value or handle the error as needed
+        }
+        components.push({ type, name, price });
       }
     }
-  });
+  }
 
   // Assuming you have an element to display the total price with id 'total-price'
   const totalPriceElement = document.getElementById('total-price');
