@@ -32,12 +32,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration with connect-mongo
 app.use(session({
-  secret: 'secret',
+  secret: 'GeneratedRandomString',
   resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({ mongoUrl: mongoDbUrl }),
-  cookie: { maxAge: 60000 * 60 } // Example: 60 minutes
+  saveUninitialized: false,
+  store: MongoStore.create({ 
+    mongoUrl: 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority'
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 // 24 hours
+  }
 }));
+
 
 // Passport initialization and session connection
 app.use(passport.initialize());
@@ -75,10 +80,17 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', UserSchema);
 
-// Build schema
+// Build schema adjusted to include a name and price
 const BuildSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  components: Object // This should be adjusted to your schema.
+  components: [{
+    // Assuming each component is an object with a type, quantity, and price
+    type: String,
+    quantity: Number,
+    price: Number
+  }],
+  name: String,
+  price: Number
 });
 const Build = mongoose.model('Build', BuildSchema);
 
@@ -148,16 +160,15 @@ app.get('/builds/:buildId', isAuthenticated, async (req, res) => {
 
 app.get('/saved-builds', isAuthenticated, async (req, res) => {
   try {
-    const userWithBuilds = await User.findById(req.user._id).populate({
-      path: 'builds',
-      // Add more population as needed for nested components
+    const userWithBuilds = await User.findById(req.user._id).populate('builds');
+    const builds = userWithBuilds.builds.map(build => {
+      // Calculate the total price and return an object with all necessary build data
+      const totalPrice = build.components.reduce((sum, component) => sum + (component.price * component.quantity), 0);
+      return {
+        ...build.toObject(),
+        totalPrice
+      };
     });
-
-    const builds = userWithBuilds.builds.map(build => ({
-      ...build.toObject(),
-      amount: build.components.reduce((acc, { price }) => acc + price, 0)
-    }));
-
     res.render('saved-builds', { builds });
   } catch (error) {
     console.error(error);
