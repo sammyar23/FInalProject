@@ -135,21 +135,23 @@ app.post('/save-build', async (req, res) => {
 
   // Transform the received object into an array of component objects
   const components = Object.entries(req.body).reduce((acc, [key, value]) => {
-    // Assuming that every field except 'buildName' is a component
     if (key !== 'buildName') {
-      const [name, price] = value.split(' - $');
-      acc.push({
-        type: key,
-        name: name,
-        price: parseFloat(price)
-      });
+      const [name, priceString] = value.split(' - $');
+      const price = parseFloat(priceString);
+      if (!isNaN(price)) {
+        acc.push({ type: key, name: name, price: price });
+      } else {
+        // Handle the case where price is NaN, perhaps by logging or setting a default value
+        console.error(`Price parsing failed for ${name}:`, priceString);
+      }
     }
     return acc;
   }, []);
-
-  if (components.length === 0) {
-    return res.status(400).send('Components data is missing or invalid.');
+  
+  if (components.some(component => isNaN(component.price))) {
+    return res.status(400).send('Components data has invalid price values.');
   }
+  
 
   // Proceed with constructing the build object
   const newBuild = new Build({
