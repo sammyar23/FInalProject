@@ -110,28 +110,36 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/save-build', async (req, res) => {
-  if (!req.isAuthenticated()) return res.redirect('/login');
-  const newBuild = new Build({ user: req.user._id, components: req.body });
-  await newBuild.save();
-  req.user.builds.push(newBuild._id);
-  await req.user.save();
-  res.redirect('/saved-builds');
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login');
+  }
+  // Construct the build object including the name and price
+  const newBuild = new Build({
+    user: req.user._id,
+    components: req.body.components, // Assuming 'components' is the field where the build parts are stored
+    name: req.body.buildName,
+    price: req.body.totalPrice // Assuming 'totalPrice' is the field where the total price is stored
+  });
+  try {
+    await newBuild.save();
+    req.user.builds.push(newBuild._id);
+    await req.user.save();
+    res.redirect('/saved-builds'); // This should redirect to the saved builds page, where the user can immediately view their builds
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error saving build.');
+  }
 });
 
-app.get('/saved-builds', async (req, res) => {
-  if (!req.isAuthenticated()) return res.redirect('/login');
 
+app.get('/saved-builds', async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login');
+  }
   try {
+    // Find the user and populate their builds
     const userWithBuilds = await User.findById(req.user._id).populate('builds');
-    // Assuming each build has a 'components' array with prices
-    const builds = userWithBuilds.builds.map(build => {
-      const totalAmount = build.components.reduce((sum, component) => sum + component.price, 0);
-      return {
-        ...build.toObject(),
-        amount: totalAmount // Add a new property 'amount' with the total price
-      };
-    });
-    res.render('saved-builds', { builds });
+    res.render('saved-builds', { builds: userWithBuilds.builds }); // Pass the user's builds to the pug template
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching builds.');
