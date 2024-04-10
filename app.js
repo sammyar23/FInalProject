@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo'); // Only one declaration is needed
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
@@ -31,10 +31,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration with connect-mongo
 app.use(session({
-  secret: 'GeneratedRandomString', // Replace with your own secret, can be any string
+  secret: 'YourSecretStringHere', // Replace with your own secret, can be any string
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl }),
+  store: MongoStore.create({ mongoUrl: mongoDbUrl }), // Fixed to use the variable defined above
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
 
@@ -122,10 +122,15 @@ app.post('/save-build', async (req, res) => {
   // Construct the build object including the name and price
   const newBuild = new Build({
     user: req.user._id,
-    components: req.body.components, // Assuming 'components' is the field where the build parts are stored
+    components: req.body.components.map(component => ({
+      type: component.type,
+      quantity: component.quantity,
+      price: component.price
+    })),
     name: req.body.buildName,
-    price: req.body.totalPrice // Assuming 'totalPrice' is the field where the total price is stored
+    price: req.body.totalPrice
   });
+  
   try {
     await newBuild.save();
     req.user.builds.push(newBuild._id);
@@ -156,8 +161,9 @@ app.get('/saved-builds', isAuthenticated, async (req, res) => {
   try {
     const userWithBuilds = await User.findById(req.user._id).populate('builds');
     const builds = userWithBuilds.builds.map(build => {
-      // Calculate the total price and return an object with all necessary build data
-      const totalPrice = build.components.reduce((sum, component) => sum + (component.price * component.quantity), 0);
+      const totalPrice = build.components.reduce((sum, component) => {
+        return sum + (component.price * component.quantity);
+      }, 0);
       return {
         ...build.toObject(),
         totalPrice
