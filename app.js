@@ -137,17 +137,17 @@ app.post('/save-build', async (req, res) => {
   const components = Object.entries(req.body).reduce((acc, [key, value]) => {
     if (key !== 'buildName') {
       const [name, priceString] = value.split(' - $');
-      const price = parseFloat(priceString);
-      if (!isNaN(price)) {
-        acc.push({ type: key, name: name, price: price });
-      } else {
-        // Handle the case where price is NaN, perhaps by logging or setting a default value
+      let price = parseFloat(priceString);
+      if (isNaN(price)) {
         console.error(`Price parsing failed for ${name}:`, priceString);
+        price = 0; // Set a default value or return an error response
       }
+      acc.push({ type: key, name: name, price: price });
     }
     return acc;
   }, []);
   
+  // Before trying to save the new Build
   if (components.some(component => isNaN(component.price))) {
     return res.status(400).send('Components data has invalid price values.');
   }
