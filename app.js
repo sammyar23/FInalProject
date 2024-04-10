@@ -8,6 +8,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const app = express();
+app.use(express.json()); // Add this line to parse JSON bodies
+
 
 // MongoDB Connection URL
 const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority';
@@ -121,7 +123,13 @@ app.post('/save-build', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.redirect('/login');
   }
-  // Construct the build object including the name and price
+
+  // Check if the components array is provided
+  if (!req.body.components || !Array.isArray(req.body.components)) {
+    return res.status(400).send('Components data is missing or invalid.');
+  }
+
+  // Proceed with constructing the build object
   const newBuild = new Build({
     user: req.user._id,
     components: req.body.components.map(component => ({
