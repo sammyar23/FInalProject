@@ -7,7 +7,7 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
-
+const MongoStore = require('connect-mongo');
 const app = express();
 
 // MongoDB Connection URL
@@ -131,22 +131,39 @@ app.post('/save-build', async (req, res) => {
   }
 });
 
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.redirect('/login');
+}
 
-app.get('/saved-builds', async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/login');
-  }
+app.get('/builds/:buildId', isAuthenticated, async (req, res) => {
   try {
-    // Find the user and populate their builds
-    const userWithBuilds = await User.findById(req.user._id).populate('builds');
-    res.render('saved-builds', { builds: userWithBuilds.builds }); // Pass the user's builds to the pug template
+    const build = await Build.findById(req.params.buildId).populate('components.component');
+    res.render('build-detail', { build });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching build details.');
+  }
+});
+
+app.get('/saved-builds', isAuthenticated, async (req, res) => {
+  try {
+    const userWithBuilds = await User.findById(req.user._id).populate({
+      path: 'builds',
+      // Add more population as needed for nested components
+    });
+
+    const builds = userWithBuilds.builds.map(build => ({
+      ...build.toObject(),
+      amount: build.components.reduce((acc, { price }) => acc + price, 0)
+    }));
+
+    res.render('saved-builds', { builds });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching builds.');
   }
 });
-
-
 
 // Logout route
 app.get('/logout', (req, res) => {
