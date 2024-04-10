@@ -133,31 +133,44 @@ app.post('/save-build', async (req, res) => {
     return res.redirect('/login');
   }
 
-  if (!req.body.components || !Array.isArray(req.body.components)) {
+  // Transform the received object into an array of component objects
+  const components = Object.entries(req.body).reduce((acc, [key, value]) => {
+    // Assuming that every field except 'buildName' is a component
+    if (key !== 'buildName') {
+      const [name, price] = value.split(' - $');
+      acc.push({
+        type: key,
+        name: name,
+        price: parseFloat(price)
+      });
+    }
+    return acc;
+  }, []);
+
+  if (components.length === 0) {
     return res.status(400).send('Components data is missing or invalid.');
   }
+
   // Proceed with constructing the build object
   const newBuild = new Build({
     user: req.user._id,
-    components: req.body.components.map(component => ({
-      type: component.type,
-      quantity: component.quantity,
-      price: component.price
-    })),
+    components: components,
     name: req.body.buildName,
-    price: req.body.totalPrice
+    // Calculate the total price based on the components array
+    price: components.reduce((total, component) => total + component.price, 0)
   });
-  
+
   try {
     await newBuild.save();
     req.user.builds.push(newBuild._id);
     await req.user.save();
-    res.redirect('/saved-builds'); // This should redirect to the saved builds page, where the user can immediately view their builds
+    res.redirect('/saved-builds'); // Redirect to the saved builds page
   } catch (error) {
     console.error(error);
     res.status(500).send('Error saving build.');
   }
 });
+
 
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) return next();
