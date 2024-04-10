@@ -15,10 +15,7 @@ app.use(express.json()); // Add this line to parse JSON bodies
 const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority';
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+
 
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
