@@ -13,10 +13,11 @@ const app = express();
 const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority';
 
 // Connect to MongoDB
-mongoose.connect(mongoDbUrl, {
+mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Define the port variable
@@ -34,9 +35,10 @@ app.use(session({
   secret: 'YourSecretStringHere', // Replace with your own secret, can be any string
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: mongoDbUrl }), // Fixed to use the variable defined above
+  store: MongoStore.create({ mongoUrl: 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority' }), // Make sure this matches the variable defined above
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
+
 
 // Passport initialization and session connection
 app.use(passport.initialize());
@@ -161,9 +163,9 @@ app.get('/saved-builds', isAuthenticated, async (req, res) => {
   try {
     const userWithBuilds = await User.findById(req.user._id).populate('builds');
     const builds = userWithBuilds.builds.map(build => {
-      const totalPrice = build.components.reduce((sum, component) => {
-        return sum + (component.price * component.quantity);
-      }, 0);
+      // Add check for build.components array
+      const totalPrice = Array.isArray(build.components) ?
+        build.components.reduce((sum, component) => sum + (component.price * component.quantity), 0) : 0;
       return {
         ...build.toObject(),
         totalPrice
@@ -175,6 +177,7 @@ app.get('/saved-builds', isAuthenticated, async (req, res) => {
     res.status(500).send('Error fetching builds.');
   }
 });
+
 
 // Logout route
 app.get('/logout', (req, res) => {
