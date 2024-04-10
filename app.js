@@ -3,14 +3,18 @@ const path = require('path');
 const fs = require('fs').promises;
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 
 const app = express();
 
+// MongoDB Connection URL
+const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority';
+
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(mongoDbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -26,15 +30,20 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
-// Session configuration
+// Session configuration with connect-mongo
 app.use(session({
   secret: 'secret',
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 60000 }
+  store: MongoStore.create({ mongoUrl: mongoDbUrl }),
+  cookie: { maxAge: 60000 * 60 } // Example: 60 minutes
 }));
 
-// Passport configuration
+// Passport initialization and session connection
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Passport configuration
 passport.use(new LocalStrategy(
   async (username, password, done) => {
     const user = await User.findOne({ username });
@@ -58,9 +67,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
-
 // User schema
 const UserSchema = new mongoose.Schema({
   username: String,
@@ -83,6 +89,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+
 app.get('/', (req, res) => res.render('home'));
 
 app.get('/register', (req, res) => res.render('register'));
