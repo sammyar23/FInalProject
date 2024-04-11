@@ -127,17 +127,19 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/save-build', async (req, res) => {
+  // Existing code...
   console.log(req.body); // For debugging
 
   if (!req.isAuthenticated()) {
     return res.redirect('/login');
   }
 
-  // Transform the received object into an array of component objects
-  // Inside your POST /save-build route handler
-  const components = req.body.components.map(component => {
+  // Insert your validation logic here
+  let isValid = true;
+  let components = req.body.components.map(component => {
     let price = parseFloat(component.price);
     if (isNaN(price)) {
+      isValid = false; // Flag as invalid
       // Log the error or handle it as needed
       price = 0; // Setting a default price if NaN
     }
@@ -148,9 +150,11 @@ app.post('/save-build', async (req, res) => {
     };
   });
 
-  // Check if any component has an invalid price
-  if (components.some(component => isNaN(component.price))) {
-    return res.status(400).send('Invalid component price.');
+  // If any of the components had an invalid price, do not proceed
+  if (!isValid) {
+    console.error('Invalid component data provided.');
+    // Handle the response appropriately, perhaps by sending an error message back to the client
+    return res.status(400).send('Invalid component data.');
   }
 
   
