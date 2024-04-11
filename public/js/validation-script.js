@@ -6,7 +6,18 @@ document.addEventListener('DOMContentLoaded', function() {
       event.preventDefault();
   
       let isValid = true;
-      const components = [...]; // You need to collect component data from your form inputs
+      const components = [
+        'cpu',
+        'motherboard',
+        'gpu',
+        'memory',
+        'case',
+        'case-fan',
+        'cpu-cooler',
+        'internal-hard-drive',
+        'power-supply',
+        'sound-card'
+      ]; // You need to collect component data from your form inputs
   
       // Validate the components
       components.forEach(component => {
