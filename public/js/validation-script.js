@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('myForm');
+  if (!form) {
+      console.error('Form not found');
+      return;
+  }
 
   form.addEventListener('submit', function(event) {
-    // Prevent the default form submission to validate first
-    event.preventDefault();
+    event.preventDefault();;
 
     let isValid = true;
     const components = [
