@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
   const cpuSelect = document.getElementById('cpu-select');
-  if (cpuSelect) {
-    cpuSelect.addEventListener('change', function(event) {
+  if (!cpuSelect) {
+      console.error('CPU select not found');
+      return;
+  }
+
+  cpuSelect.addEventListener('change', function(event) {
       const selectedSocket = this.options[this.selectedIndex].getAttribute('data-socket');
 
       fetch(`/api/components/motherboard?socket=${selectedSocket}`)
