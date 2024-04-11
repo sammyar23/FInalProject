@@ -35,10 +35,11 @@ block content
       // CPU selection
       .form-row
         label(for="cpu") CPU
-        select(name="cpu" id="cpu-select" required)
+        select(name="components[0].type" id="cpu-select" required)
+          option(value="cpu")
           each cpu in cpus
-            if cpu.socket && cpu.price
-              option(value=cpu.name data-socket=cpu.socket data-price=cpu.price) #{cpu.name} - $#{cpu.price}
+            option(value=cpu.name data-price=cpu.price) #{cpu.name} - $#{cpu.price}
+
       // Motherboard selection
       .form-row
         label(for="motherboard") Motherboard
@@ -59,7 +60,6 @@ block content
           each mem in memory
             option(value=mem.id data-price=mem.price) #{mem.name} - $#{mem.price}
 
-      // Continue with the same pattern for other components:
       .form-row
         label(for="case") Case
         select(name="case" id="case-select")
