@@ -10,8 +10,9 @@ document.getElementById('cpu-select').addEventListener('change', function(event)
       motherboards.forEach(motherboard => {
         if (motherboard.name && motherboard.price && motherboard.price !== 'null') {
           const option = document.createElement('option');
-          option.value = motherboard.name + ' - $' + motherboard.price; // Set value
+          option.value = motherboard.name; // Set value
           option.textContent = `${motherboard.name} - $${motherboard.price}`; // Set text
+          option.dataset.price = motherboard.price; // Set data-price attribute for calculation
           motherboardSelect.appendChild(option);
         }
       });
