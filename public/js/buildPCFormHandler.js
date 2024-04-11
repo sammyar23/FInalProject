@@ -1,66 +1,68 @@
 document.getElementById('build-form').addEventListener('submit', function(event) {
-  event.preventDefault(); // Prevent form from submitting immediately
+  event.preventDefault();
 
-  // Collecting all selected components
-  let components = [];
-  let isValid = true; // Flag to check if all data is valid
-
-  const componentTypes = [
-    'cpu',
-    'motherboard',
-    'gpu',
-    'memory',
-    'case',
-    'case-fan',
-    'cpu-cooler',
-    'internal-hard-drive',
-    'power-supply',
-    'sound-card'
-  ];
-  
-  for (const type of componentTypes) {
-    const selectElement = document.getElementById(`${type}-select`);
-    if (selectElement) {
-      const selectedOption = selectElement.options[selectElement.selectedIndex];
-      if (selectedOption && selectedOption.value) {
-        // Assuming that the value attribute contains the component name
-        const name = selectedOption.value;
-        // Check if price data attribute exists and is a valid number
-        let price = selectedOption.dataset.price ? parseFloat(selectedOption.dataset.price) : 0;
-        if (isNaN(price)) {
-          console.error(`Invalid price for component type: ${type}, name: ${name}`);
-          isValid = false; // Set isValid to false as the price is not a number
-          // You might want to inform the user more visibly, for example:
-          alert(`Invalid price for ${type}. Please select a valid option.`);
-          break; // Exit the loop as there is invalid data
-        }
-        components.push({ type, name, price });
-      }
-    }
-  }
-
-  // If any of the components had an invalid price, stop the function
-  if (!isValid) {
-    console.error('Submission stopped due to invalid data.');
+  const buildName = document.getElementById('build-name').value;
+  if (!buildName) {
+    alert('Please enter a name for your build.');
     return;
   }
 
-  // Assuming you have an element to display the total price with id 'total-price'
-  const totalPriceElement = document.getElementById('total-price');
-  const totalPrice = totalPriceElement ? parseFloat(totalPriceElement.textContent) : 0;
+  // Define an empty array to hold components data
+  const components = [];
 
-  // Now we need to send the data as JSON in the body of a fetch request
+  // Function to create component object and validate
+  function createComponent(selectId, type) {
+    const select = document.getElementById(selectId);
+    const option = select.options[select.selectedIndex];
+    const price = parseFloat(option.dataset.price);
+
+    if (isNaN(price)) {
+      alert(`Invalid price for ${type}. Please select a valid option.`);
+      return false; // Validation failed
+    }
+
+    components.push({ type, name: option.text, price });
+    return true; // Validation successful
+  }
+
+  // Collect and validate CPU data
+  if (!createComponent('cpu-select', 'cpu')) return;
+
+  // Collect and validate Motherboard data
+  if (!createComponent('motherboard-select', 'motherboard')) return;
+
+  // Collect and validate GPU data
+  if (!createComponent('gpu-select', 'gpu')) return;
+
+  // Collect and validate Memory data
+  if (!createComponent('memory-select', 'memory')) return;
+
+  // Collect and validate Case data
+  if (!createComponent('case-select', 'case')) return;
+
+  // Collect and validate Case Fan data
+  if (!createComponent('case-fan-select', 'case-fan')) return;
+
+  // Collect and validate CPU Cooler data
+  if (!createComponent('cpu-cooler-select', 'cpu-cooler')) return;
+
+  // Collect and validate Internal Hard Drive data
+  if (!createComponent('internal-hard-drive-select', 'internal-hard-drive')) return;
+
+  // Collect and validate Power Supply data
+  if (!createComponent('power-supply-select', 'power-supply')) return;
+
+  // Collect and validate Sound Card data
+  if (!createComponent('sound-card-select', 'sound-card')) return;
+
+  // Now we have an array 'components' with all the validated data
+  // Send this data to the server
   fetch('/save-build', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      // Include credentials if your authentication requires cookies
-      'credentials': 'include'
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      components: components,
-      totalPrice: totalPrice // Send the total price if required by your server
-    })
+    body: JSON.stringify({ buildName, components })
   })
   .then(response => {
     if (!response.ok) {
@@ -69,12 +71,11 @@ document.getElementById('build-form').addEventListener('submit', function(event)
     return response.json();
   })
   .then(data => {
-    // Here you would handle the successful response, such as redirecting
-    // to the saved builds page or displaying a success message
     console.log('Build saved successfully:', data);
     window.location.href = '/saved-builds'; // Redirect to saved builds page
   })
   .catch(error => {
     console.error('Error saving the build:', error);
+    alert('Error saving the build. Please try again.');
   });
 });
