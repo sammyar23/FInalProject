@@ -1,9 +1,22 @@
-ddocument.getElementById('build-form').addEventListener('submit', function(event) {
+document.getElementById('build-form').addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent form from submitting immediately
 
   // Collecting all selected components
   let components = [];
-  const componentTypes = ['cpu', 'motherboard', 'gpu', 'memory', 'case', 'case-fan', 'cpu-cooler', 'internal-hard-drive', 'power-supply', 'sound-card'];
+  let isValid = true; // Flag to check if all data is valid
+
+  const componentTypes = [
+    'cpu',
+    'motherboard',
+    'gpu',
+    'memory',
+    'case',
+    'case-fan',
+    'cpu-cooler',
+    'internal-hard-drive',
+    'power-supply',
+    'sound-card'
+  ];
   
   for (const type of componentTypes) {
     const selectElement = document.getElementById(`${type}-select`);
@@ -16,11 +29,20 @@ ddocument.getElementById('build-form').addEventListener('submit', function(event
         let price = selectedOption.dataset.price ? parseFloat(selectedOption.dataset.price) : 0;
         if (isNaN(price)) {
           console.error(`Invalid price for component type: ${type}, name: ${name}`);
-          price = 0; // Set a default value or handle the error as needed
+          isValid = false; // Set isValid to false as the price is not a number
+          // You might want to inform the user more visibly, for example:
+          alert(`Invalid price for ${type}. Please select a valid option.`);
+          break; // Exit the loop as there is invalid data
         }
         components.push({ type, name, price });
       }
     }
+  }
+
+  // If any of the components had an invalid price, stop the function
+  if (!isValid) {
+    console.error('Submission stopped due to invalid data.');
+    return;
   }
 
   // Assuming you have an element to display the total price with id 'total-price'
@@ -32,7 +54,7 @@ ddocument.getElementById('build-form').addEventListener('submit', function(event
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // If you use session-based authentication, ensure cookies are sent with the request
+      // Include credentials if your authentication requires cookies
       'credentials': 'include'
     },
     body: JSON.stringify({
