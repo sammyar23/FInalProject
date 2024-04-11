@@ -126,14 +126,18 @@ app.get('/logout', (req, res) => {
 });
 
 app.post('/save-build', async (req, res) => {
-  // Existing code...
   console.log(req.body); // For debugging
 
   if (!req.isAuthenticated()) {
     return res.redirect('/login');
   }
 
-  // Insert your validation logic here
+  // Check if components exist in the request body
+  if (!req.body.components || !Array.isArray(req.body.components)) {
+    console.error('Components are missing or invalid in the request body.');
+    return res.status(400).send('Components data is required.');
+  }
+
   let isValid = true;
   let components = req.body.components.map(component => {
     let price = parseFloat(component.price);
