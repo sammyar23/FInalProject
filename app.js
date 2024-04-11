@@ -89,14 +89,14 @@ const User = mongoose.model('User', UserSchema);
 const BuildSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   components: [{
-    // Assuming each component is an object with a type, quantity, and price
     type: String,
-    quantity: Number,
+    name: String,
     price: Number
   }],
   name: String,
   price: Number
 });
+
 const Build = mongoose.model('Build', BuildSchema);
 
 // Middleware to make user object available in all templates
@@ -134,23 +134,25 @@ app.post('/save-build', async (req, res) => {
   }
 
   // Transform the received object into an array of component objects
-  const components = Object.entries(req.body).reduce((acc, [key, value]) => {
-    if (key !== 'buildName') {
-      const [name, priceString] = value.split(' - $');
-      let price = parseFloat(priceString);
-      if (isNaN(price)) {
-        console.error(`Price parsing failed for ${name}:`, priceString);
-        price = 0; // Set a default value or return an error response
-      }
-      acc.push({ type: key, name: name, price: price });
+  // Inside your POST /save-build route handler
+  const components = req.body.components.map(component => {
+    let price = parseFloat(component.price);
+    if (isNaN(price)) {
+      // Log the error or handle it as needed
+      price = 0; // Setting a default price if NaN
     }
-    return acc;
-  }, []);
-  
-  // Before trying to save the new Build
+    return {
+      type: component.type,
+      name: component.name,
+      price: price
+    };
+  });
+
+  // Check if any component has an invalid price
   if (components.some(component => isNaN(component.price))) {
-    return res.status(400).send('Components data has invalid price values.');
+    return res.status(400).send('Invalid component price.');
   }
+
   
 
   // Proceed with constructing the build object
