@@ -1,44 +1,56 @@
+// Make sure DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('build-form');
-  if (form) {
-    form.addEventListener('submit', function(event) {
+  const buildForm = document.getElementById('build-form');
+  if (!buildForm) {
+      console.error('Build form not found.');
+      return;
+  }
+
+  buildForm.addEventListener('submit', function(event) {
       event.preventDefault();
 
-      const formData = new FormData(form);
-      const buildData = {
-        buildName: formData.get('buildName'),
-        components: []
-      };
+      // Gather form data
+      const buildName = document.getElementById('build-name').value.trim();
+      const components = gatherComponentsData();
 
-      // Example for CPU, repeat for other components as needed
-      const cpu = document.getElementById('cpu-select');
-      if (cpu) {
-        buildData.components.push({
-          type: 'cpu',
-          name: cpu.options[cpu.selectedIndex].text,
-          price: cpu.options[cpu.selectedIndex].getAttribute('data-price')
-        });
+      if (!buildName) {
+          alert('Please enter a build name.');
+          return;
       }
 
-      // Repeat the process for other components
+      // Define the payload
+      const payload = {
+          buildName,
+          components
+      };
 
+      // Send the payload to server
       fetch('/save-build', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(buildData)
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
       })
-      .then(response => response.json())
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+      })
       .then(data => {
-        console.log('Build saved successfully:', data);
-        window.location.href = '/saved-builds';
+          console.log('Build saved successfully:', data);
+          window.location.href = '/saved-builds'; // Redirect on success
       })
       .catch(error => {
-        console.error('Error saving the build:', error);
+          console.error('Error saving the build:', error);
+          alert('Failed to save build.');
       });
-    });
-  } else {
-    console.error('Build form not found');
-  }
+  });
 });
+
+function gatherComponentsData() {
+  // Placeholder for gathering component data
+  // Replace with actual data gathering logic
+  return []; // return the components array
+}

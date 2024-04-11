@@ -1,24 +1,32 @@
 document.addEventListener('DOMContentLoaded', function() {
   const cpuSelect = document.getElementById('cpu-select');
-  const motherboardSelect = document.getElementById('motherboard-select');
+  if (!cpuSelect) {
+      console.error('CPU select element not found.');
+      return;
+  }
 
-  if (cpuSelect && motherboardSelect) {
-    cpuSelect.addEventListener('change', function() {
-      const socket = this.options[this.selectedIndex].getAttribute('data-socket');
+  cpuSelect.addEventListener('change', function() {
+      const socket = cpuSelect.value; // Assuming the value contains the socket type
+      // Fetch and update motherboards
+      // Note: Adjust URL/path as needed
       fetch(`/api/components/motherboard?socket=${socket}`)
-        .then(response => response.json())
-        .then(data => {
-          motherboardSelect.innerHTML = ''; // Clear existing options
-          data.forEach(mb => {
-            const option = document.createElement('option');
-            option.textContent = `${mb.name} - $${mb.price}`;
-            option.value = mb.name;
-            motherboardSelect.appendChild(option);
-          });
-        })
-        .catch(error => console.error('Error:', error));
-    });
-  } else {
-    console.error('CPU select or motherboard select not found.');
+          .then(response => response.json())
+          .then(updateMotherboardOptions)
+          .catch(error => console.error('Failed to fetch motherboards:', error));
+  });
+
+  function updateMotherboardOptions(motherboards) {
+      const motherboardSelect = document.getElementById('motherboard-select');
+      if (!motherboardSelect) {
+          console.error('Motherboard select element not found.');
+          return;
+      }
+
+      motherboardSelect.innerHTML = ''; // Clear existing options
+      motherboards.forEach(mb => {
+          const option = new Option(`${mb.name} - $${mb.price}`, mb.name);
+          option.dataset.price = mb.price; // Assuming price is important for later
+          motherboardSelect.add(option);
+      });
   }
 });
