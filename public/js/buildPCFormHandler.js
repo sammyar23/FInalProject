@@ -1,56 +1,41 @@
-// Make sure DOM is fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-  const buildForm = document.getElementById('build-form');
-  if (!buildForm) {
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('build-form');
+  if (!form) {
       console.error('Build form not found.');
       return;
   }
 
-  buildForm.addEventListener('submit', function(event) {
+  form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      // Gather form data
-      const buildName = document.getElementById('build-name').value.trim();
-      const components = gatherComponentsData();
+      // Assuming all select elements have a consistent naming convention like "components[0].type"
+      const selects = document.querySelectorAll('select');
+      const components = Array.from(selects).map(select => {
+          const selectedIndex = select.selectedIndex;
+          const option = select.options[selectedIndex];
+          return {
+              type: select.name,
+              name: option.value,
+              price: parseFloat(option.getAttribute('data-price')) || 0
+          };
+      });
 
-      if (!buildName) {
-          alert('Please enter a build name.');
-          return;
-      }
-
-      // Define the payload
+      const buildName = document.getElementById('build-name').value;
       const payload = {
           buildName,
           components
       };
 
-      // Send the payload to server
       fetch('/save-build', {
           method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
       })
-      .then(response => {
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-          console.log('Build saved successfully:', data);
-          window.location.href = '/saved-builds'; // Redirect on success
+          console.log('Build saved successfully', data);
+          // Redirect or update UI as needed
       })
-      .catch(error => {
-          console.error('Error saving the build:', error);
-          alert('Failed to save build.');
-      });
+      .catch(error => console.error('Error saving the build:', error));
   });
 });
-
-function gatherComponentsData() {
-  // Placeholder for gathering component data
-  // Replace with actual data gathering logic
-  return []; // return the components array
-}

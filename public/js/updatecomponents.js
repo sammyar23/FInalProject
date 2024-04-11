@@ -1,32 +1,24 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   const cpuSelect = document.getElementById('cpu-select');
   if (!cpuSelect) {
       console.error('CPU select element not found.');
       return;
   }
 
-  cpuSelect.addEventListener('change', function() {
-      const socket = cpuSelect.value; // Assuming the value contains the socket type
-      // Fetch and update motherboards
-      // Note: Adjust URL/path as needed
+  cpuSelect.addEventListener('change', () => {
+      const socket = cpuSelect.value;
       fetch(`/api/components/motherboard?socket=${socket}`)
           .then(response => response.json())
-          .then(updateMotherboardOptions)
+          .then(motherboards => {
+              const motherboardSelect = document.getElementById('motherboard-select');
+              motherboardSelect.innerHTML = ''; // Clear existing options
+
+              motherboards.forEach(motherboard => {
+                  const option = new Option(`${motherboard.name} - $${motherboard.price}`, motherboard.name);
+                  option.dataset.price = motherboard.price;
+                  motherboardSelect.appendChild(option);
+              });
+          })
           .catch(error => console.error('Failed to fetch motherboards:', error));
   });
-
-  function updateMotherboardOptions(motherboards) {
-      const motherboardSelect = document.getElementById('motherboard-select');
-      if (!motherboardSelect) {
-          console.error('Motherboard select element not found.');
-          return;
-      }
-
-      motherboardSelect.innerHTML = ''; // Clear existing options
-      motherboards.forEach(mb => {
-          const option = new Option(`${mb.name} - $${mb.price}`, mb.name);
-          option.dataset.price = mb.price; // Assuming price is important for later
-          motherboardSelect.add(option);
-      });
-  }
 });
