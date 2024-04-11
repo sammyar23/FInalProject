@@ -1,31 +1,24 @@
-// updatecomponents.js
 document.addEventListener('DOMContentLoaded', function() {
   const cpuSelect = document.getElementById('cpu-select');
-  if (!cpuSelect) {
-    console.error('CPU select not found.');
-    return;
+  const motherboardSelect = document.getElementById('motherboard-select');
+
+  if (cpuSelect && motherboardSelect) {
+    cpuSelect.addEventListener('change', function() {
+      const socket = this.options[this.selectedIndex].getAttribute('data-socket');
+      fetch(`/api/components/motherboard?socket=${socket}`)
+        .then(response => response.json())
+        .then(data => {
+          motherboardSelect.innerHTML = ''; // Clear existing options
+          data.forEach(mb => {
+            const option = document.createElement('option');
+            option.textContent = `${mb.name} - $${mb.price}`;
+            option.value = mb.name;
+            motherboardSelect.appendChild(option);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    });
+  } else {
+    console.error('CPU select or motherboard select not found.');
   }
-
-  cpuSelect.addEventListener('change', function() {
-    const socket = cpuSelect.value;
-
-    fetch(`/api/components/motherboard?socket=${socket}`)
-      .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok.');
-        return response.json();
-      })
-      .then(motherboards => {
-        const motherboardSelect = document.getElementById('motherboard-select');
-        motherboardSelect.innerHTML = ''; // Clear current motherboard options
-
-        motherboards.forEach(motherboard => {
-          const option = document.createElement('option');
-          option.value = motherboard.name;
-          option.textContent = `${motherboard.name} - $${motherboard.price}`;
-          option.dataset.price = motherboard.price;
-          motherboardSelect.appendChild(option);
-        });
-      })
-      .catch(error => console.error('There has been a problem with your fetch operation:', error));
-  });
 });
