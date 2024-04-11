@@ -1,82 +1,96 @@
+// buildPCFormHandler.js
 document.addEventListener('DOMContentLoaded', function() {
-  const buildForm = document.getElementById('build-form');
-  if (!buildForm) {
-      console.error('Build form not found');
-      return;
+  // Ensures the code runs only after the DOM is fully loaded.
+
+  const form = document.getElementById('build-form'); // Make sure 'build-form' is the correct ID
+  if (!form) {
+    console.error('The build form was not found on this page.');
+    return;
   }
 
-  buildForm.addEventListener('submit', handleSubmit);
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
 
-  function handleSubmit(event) {
-      event.preventDefault();
+    // Object to hold the build data
+    let buildData = {
+      buildName: '',
+      components: []
+    };
 
-      const buildNameInput = document.getElementById('build-name');
-      if (!buildNameInput) {
-          console.error('Build name input not found');
-          return;
+    // Function to collect component data
+    const collectComponentData = (selectorId, componentType) => {
+      const selectElement = document.getElementById(selectorId);
+      if (!selectElement) {
+        console.error(`Select element for ${componentType} not found.`);
+        return false;
       }
 
-      const buildName = buildNameInput.value.trim();
-      if (!buildName) {
-          alert('Please enter a name for your build.');
-          return;
-      }
-      const components = [];
-      const componentSelectors = {
-          'cpu': 'cpu-select',
-          'motherboard': 'motherboard-select',
-          'gpu': 'gpu-select',
-          'memory': 'memory-select',
-          'case': 'case-select',
-          'case-fan': 'case-fan-select',
-          'cpu-cooler': 'cpu-cooler-select',
-          'internal-hard-drive': 'internal-hard-drive-select',
-          'power-supply': 'power-supply-select',
-          'sound-card': 'sound-card-select'
-      };
-
-      for (const [type, selectId] of Object.entries(componentSelectors)) {
-          const select = document.getElementById(selectId);
-          if (!select) {
-              alert(`No select element found for ${type}`);
-              return;
-          }
-
-          const selectedOption = select.options[select.selectedIndex];
-          if (!selectedOption) {
-              alert(`No option selected for ${type}`);
-              return;
-          }
-
-          const price = parseFloat(selectedOption.dataset.price);
-          if (isNaN(price)) {
-              alert(`Invalid price for ${type}. Please select a valid option.`);
-              return;
-          }
-
-          components.push({ type, name: selectedOption.text, price });
+      const selectedOption = selectElement.options[selectElement.selectedIndex];
+      if (!selectedOption) {
+        console.error(`No option selected for ${componentType}.`);
+        return false;
       }
 
-      fetch('/save-build', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ buildName, components })
-      })
-      .then(response => {
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-      })
-      .then(data => {
-          console.log('Build saved successfully:', data);
-          window.location.href = '/saved-builds'; // Redirect to saved builds page
-      })
-      .catch(error => {
-          console.error('Error saving the build:', error);
-          alert('Error saving the build. Please try again.');
+      const price = parseFloat(selectedOption.getAttribute('data-price'));
+      if (isNaN(price)) {
+        console.error(`Price for ${componentType} is not a valid number.`);
+        return false;
+      }
+
+      buildData.components.push({
+        type: componentType,
+        name: selectedOption.text,
+        price: price
       });
+      
+      return true;
+    };
+
+    // Collecting build name
+    const buildNameInput = document.getElementById('build-name');
+    if (buildNameInput && buildNameInput.value) {
+      buildData.buildName = buildNameInput.value;
+    } else {
+      console.error('No build name specified.');
+      return;
+    }
+
+    // Component types and corresponding select IDs
+    const componentInfo = {
+      cpu: 'cpu-select',
+      motherboard: 'motherboard-select',
+      gpu: 'gpu-select',
+      memory: 'memory-select',
+      case: 'case-select',
+      'case-fan': 'case-fan-select',
+      'cpu-cooler': 'cpu-cooler-select',
+      'internal-hard-drive': 'internal-hard-drive-select',
+      'power-supply': 'power-supply-select',
+      'sound-card': 'sound-card-select'
+    };
+
+    // Collecting components data
+    for (const [type, selectorId] of Object.entries(componentInfo)) {
+      const isSuccess = collectComponentData(selectorId, type);
+      if (!isSuccess) return; // Stop if we encounter an invalid component
+    }
+
+    // POST the build data to the server
+    fetch('/save-build', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(buildData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Build saved successfully:', data);
+      // Redirect to saved builds page or handle success
+    })
+    .catch(error => {
+      console.error('Error saving the build:', error);
+      // Handle error
+    });
   });
 });
