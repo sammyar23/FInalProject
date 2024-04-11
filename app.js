@@ -21,11 +21,10 @@ const mongoDbUrl = 'mongodb+srv://aroraf:S%40mmy22321@techtipsdata.kgv0wyd.mongo
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // Connect to MongoDB with options to handle deprecation warnings and set connection timeout
 mongoose.connect(mongoDbUrl, {
-  useNewUrlParser: true, // These options are deprecated and can be removed
-  useUnifiedTopology: true, // These options are deprecated and can be removed
-  serverSelectionTimeoutMS: 5000 // This will timeout the connection attempt after 5 seconds
+  serverSelectionTimeoutMS: 5000 // Only include options that are not deprecated
 }).then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
+
 
 mongoose.connection.on('error', err => console.error('MongoDB connection error:', err));
 
@@ -156,9 +155,6 @@ app.post('/save-build', async (req, res) => {
     // Handle the response appropriately, perhaps by sending an error message back to the client
     return res.status(400).send('Invalid component data.');
   }
-
-  
-
   // Proceed with constructing the build object
   const newBuild = new Build({
     user: req.user._id,
