@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const cpuSelect = document.getElementById('cpu-select');
   if (!cpuSelect) {
-      console.error('CPU select element not found.');
+      console.log('CPU select element not found.');
       return;
   }
 
