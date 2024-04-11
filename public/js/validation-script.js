@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('myForm');
   if (!form) {
-      console.error('Form not found');
+      console.log('Form not found');
       return;
   }
 
