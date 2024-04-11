@@ -1,20 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('build-form');
-
-  if (!form) {
+  const buildForm = document.getElementById('build-form');
+  if (!buildForm) {
       console.error('Build form not found');
       return;
   }
 
-  form.addEventListener('submit', function(event) {
+  buildForm.addEventListener('submit', handleSubmit);
+
+  function handleSubmit(event) {
       event.preventDefault();
 
-      const buildName = document.getElementById('build-name').value;
+      const buildNameInput = document.getElementById('build-name');
+      if (!buildNameInput) {
+          console.error('Build name input not found');
+          return;
+      }
+
+      const buildName = buildNameInput.value.trim();
       if (!buildName) {
           alert('Please enter a name for your build.');
           return;
       }
-
       const components = [];
       const componentSelectors = {
           'cpu': 'cpu-select',
