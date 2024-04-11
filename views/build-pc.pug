@@ -39,7 +39,13 @@ block content
           each cpu in cpus
             if cpu.socket && cpu.price
               option(value=cpu.name data-socket=cpu.socket data-price=cpu.price) #{cpu.name} - $#{cpu.price}
-
+      // Motherboard selection
+.form-row
+  label(for="motherboard") Motherboard
+  select(name="motherboard" id="motherboard-select" required)
+    each mb in motherboards
+      if mb.socket && mb.price
+        option(value=mb.name data-socket=mb.socket data-price=mb.price) #{mb.name} - $#{mb.price}
 
       .form-row
         label(for="gpu") GPU
