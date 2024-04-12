@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Page fully loaded');
   const form = document.getElementById('build-form');
   if (!form) {
-      console.error('Build form not found.');  // Ensure this message appears in the console if the form isn't found
+      console.error('Build form not found.');
       return;
   }
+  console.log('Build form found');
 
   form.addEventListener('submit', (event) => {
       event.preventDefault();
+      console.log('Form submission intercepted');
 
       // Gather form data here
       const buildName = document.getElementById('build-name').value;
