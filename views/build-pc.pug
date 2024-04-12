@@ -103,7 +103,6 @@ html
             span#total-price 0
     script.
       document.addEventListener('DOMContentLoaded', () => {
-
         const cpuSelect = document.getElementById('cpu-select');
         const motherboardSelect = document.getElementById('motherboard-select');
 
@@ -112,23 +111,30 @@ html
           motherboardSelect.innerHTML = ''; // Clear motherboard options
 
           fetch(`/api/components/motherboard?socket=${cpuSocket}`)
-            .then(response => response.text())  // Log raw text of response
-            .then(text => {
-              console.log(text);  // See what the actual text of the response is
-              return JSON.parse(text);  // Parse it as JSON
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.text();
             })
-            .then(motherboards => {
-              motherboards.forEach(mb => {
-                const option = document.createElement('option');
-                option.value = mb.name;
-                option.textContent = `${mb.name} - $${mb.price}`;
-                motherboardSelect.appendChild(option);
-              });
+            .then(text => {
+              try {
+                const motherboards = JSON.parse(text);
+                motherboards.forEach(mb => {
+                  const option = document.createElement('option');
+                  option.value = mb.name;
+                  option.textContent = `${mb.name} - $${mb.price}`;
+                  motherboardSelect.appendChild(option);
+                });
+              } catch (error) {
+                throw new Error('Server did not return JSON');
+              }
             })
             .catch(error => {
               console.error('Could not fetch motherboards:', error);
             });
         });
+
 
 
           const updateTotalPrice = () => {
