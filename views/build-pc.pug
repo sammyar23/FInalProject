@@ -112,11 +112,10 @@ html
           motherboardSelect.innerHTML = ''; // Clear motherboard options
 
           fetch(`/api/components/motherboard?socket=${cpuSocket}`)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(`Network response was not ok ${response.statusText}`);
-              }
-              return response.json();
+            .then(response => response.text())  // Log raw text of response
+            .then(text => {
+              console.log(text);  // See what the actual text of the response is
+              return JSON.parse(text);  // Parse it as JSON
             })
             .then(motherboards => {
               motherboards.forEach(mb => {
