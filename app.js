@@ -234,18 +234,19 @@ app.get('/api/components/cpu', async (req, res) => {
     }
   });
 
-  app.get('/api/components/motherboard', async (req, res) => {
+app.get('/api/components/motherboard', async (req, res) => {
     try {
-      const data = await fs.readFile('./data/json/updated-motherboard.json', 'utf8');
-      const motherboards = JSON.parse(data);
-      const socket = req.query.socket;
-      const compatibleMotherboards = motherboards.filter(mb => mb.socket === socket);
-      res.json(compatibleMotherboards);
+        const data = await fs.readFile('./data/json/updated-motherboard.json', 'utf8');
+        const motherboards = JSON.parse(data);
+        const socket = req.query.socket;
+        const compatibleMotherboards = motherboards.filter(mb => mb.socket === socket);
+        res.json(compatibleMotherboards);
     } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
+        console.error('Error fetching motherboards:', error);
+        res.status(500).send('Internal Server Error');
     }
   });
+
   
   
   app.get('/build-pc', async (req, res) => {
