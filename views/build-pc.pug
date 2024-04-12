@@ -101,34 +101,34 @@ html
           .form-row.total-price
             span Total Build Price: $
             span#total-price 0
-      script.
-        document.getElementById('cpu-select').addEventListener('change', function(event) {
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const cpuSelect = document.getElementById('cpu-select');
+        const motherboardSelect = document.getElementById('motherboard-select');
+        const totalPriceElement = document.getElementById('total-price');
+        const buildForm = document.getElementById('build-form');
+        const selects = document.querySelectorAll('select');
+
+        if (cpuSelect && motherboardSelect && totalPriceElement && buildForm) {
+          cpuSelect.addEventListener('change', function(event) {
             const cpuSocket = this.options[this.selectedIndex].getAttribute('data-socket');
             fetch(`/api/components/motherboard?socket=${cpuSocket}`)
-                .then(response => response.json())
-                .then(motherboards => {
-                    const motherboardSelect = document.getElementById('motherboard-select');
-                    motherboardSelect.innerHTML = ''; // Clear existing options
-                    motherboards.forEach(mb => {
-                        const option = document.createElement('option');
-                        option.value = mb.name; // Assuming you use the motherboard name as the value
-                        option.textContent = `${mb.name} - $${mb.price}`;
-                        motherboardSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching motherboards:', error);
+              .then(response => response.json())
+              .then(motherboards => {
+                motherboardSelect.innerHTML = ''; // Clear existing options
+                motherboards.forEach(mb => {
+                  const option = document.createElement('option');
+                  option.value = mb.name; // Assuming you use the motherboard name as the value
+                  option.textContent = `${mb.name} - $${mb.price}`;
+                  motherboardSelect.appendChild(option);
                 });
-        });
+              })
+              .catch(error => {
+                console.error('Error fetching motherboards:', error);
+              });
+          });
 
-
-
-      script.
-        document.addEventListener('DOMContentLoaded', function() {
-          const selects = document.querySelectorAll('select');
-          const totalPriceElement = document.getElementById('total-price');
-
-          function updateTotalPrice() {
+          const updateTotalPrice = () => {
             let totalPrice = 0;
             selects.forEach(select => {
               const selectedOption = select.options[select.selectedIndex];
@@ -137,94 +137,29 @@ html
               }
             });
             totalPriceElement.textContent = totalPrice.toFixed(2);
-          }
+          };
 
           selects.forEach(select => {
             select.addEventListener('change', updateTotalPrice);
           });
 
-          // Run the calculation once on load
           updateTotalPrice();
-        });
 
-      script.
-        document.addEventListener('DOMContentLoaded', function() {
-          const form = document.getElementById('myForm');
-          if (!form) {
-              console.log('Form not found');
-              return;
-          }
-
-          form.addEventListener('submit', function(event) {
-            event.preventDefault();;
-
-            let isValid = true;
-            const components = [
-              'cpu',
-              'motherboard',
-              'gpu',
-              'memory',
-              'case',
-              'case-fan',
-              'cpu-cooler',
-              'internal-hard-drive',
-              'power-supply',
-              'sound-card'
-            ]; // You need to collect component data from your form inputs
-
-            // Validate the components
-            components.forEach(component => {
-              if (isNaN(component.price)) {
-                isValid = false;
-                alert('Please fix the prices. They should be numbers.');
-              }
-            });
-
-            // If validation passed, proceed with the form submission
-            if (isValid) {
-              form.submit();
-            }
-          });
-        });
-
-      script.
-        document.addEventListener('DOMContentLoaded', () => {
-          // Log to console once the page is fully loaded
-          console.log('Page fully loaded');
-
-          // Select the form element
-          const form = document.getElementById('build-form');
-          if (!form) {
-              // Log an error if the form is not found
-              console.error('Build form not found.');
-              return;
-          }
-          // Log to console that the form was found
-          console.log('Build form found');
-
-          // Add an event listener for the form's submit event
-          form.addEventListener('submit', (event) => {
-            // Prevent the default form submission
+          buildForm.addEventListener('submit', (event) => {
             event.preventDefault();
             console.log('Form submission intercepted');
 
-            // Get the value of the build name input
             const buildName = document.getElementById('build-name').value;
-            // Validate that the build name is not empty
             if (!buildName) {
               alert('Please enter a build name.');
               return;
             }
 
-            // Select all dropdowns for components
-            const selects = document.querySelectorAll('select');
             let isValid = true;
-            // Map through each dropdown to create an array of component objects
             const components = Array.from(selects).map(select => {
               const selectedIndex = select.selectedIndex;
               const option = select.options[selectedIndex];
               const price = parseFloat(option.getAttribute('data-price'));
-              // Check if the price is not a number, and update isValid accordingly
               if (isNaN(price)) {
                 isValid = false;
                 alert('Please fix the prices. They should be numbers.');
@@ -236,33 +171,34 @@ html
               };
             });
 
-            // Proceed only if all prices are valid numbers
             if (isValid) {
               const payload = {
                 buildName,
                 components
               };
 
-              // Send the build data to the server using fetch
               fetch('/save-build', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload)
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
               })
               .then(response => {
-                  if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
-                  }
-                  return response.json();
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
               })
               .then(data => {
-                  console.log('Build saved successfully', data);
-                  // Redirect or update UI as needed
-                  window.location.href = '/saved-builds';
+                console.log('Build saved successfully', data);
+                window.location.href = '/saved-builds';
               })
               .catch(error => {
-                  console.error('Error saving the build:', error);
+                console.error('Error saving the build:', error);
               });
             }
           });
-        });
+        } else {
+          console.error('One or more elements were not found.');
+        }
+      });
+
