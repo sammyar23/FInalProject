@@ -103,30 +103,34 @@ html
             span#total-price 0
     script.
       document.addEventListener('DOMContentLoaded', () => {
+
         const cpuSelect = document.getElementById('cpu-select');
         const motherboardSelect = document.getElementById('motherboard-select');
-        const totalPriceElement = document.getElementById('total-price');
-        const buildForm = document.getElementById('build-form');
-        const selects = document.querySelectorAll('select');
 
-        if (cpuSelect && motherboardSelect && totalPriceElement && buildForm) {
-          cpuSelect.addEventListener('change', function(event) {
-            const cpuSocket = this.options[this.selectedIndex].getAttribute('data-socket');
-            fetch(`/api/components/motherboard?socket=${cpuSocket}`)
-              .then(response => response.json())
-              .then(motherboards => {
-                motherboardSelect.innerHTML = ''; // Clear existing options
-                motherboards.forEach(mb => {
-                  const option = document.createElement('option');
-                  option.value = mb.name; // Assuming you use the motherboard name as the value
-                  option.textContent = `${mb.name} - $${mb.price}`;
-                  motherboardSelect.appendChild(option);
-                });
-              })
-              .catch(error => {
-                console.error('Error fetching motherboards:', error);
+        cpuSelect.addEventListener('change', function() {
+          const cpuSocket = this.options[this.selectedIndex].getAttribute('data-socket');
+          motherboardSelect.innerHTML = ''; // Clear motherboard options
+
+          fetch(`/api/components/motherboard?socket=${cpuSocket}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Network response was not ok ${response.statusText}`);
+              }
+              return response.json();
+            })
+            .then(motherboards => {
+              motherboards.forEach(mb => {
+                const option = document.createElement('option');
+                option.value = mb.name;
+                option.textContent = `${mb.name} - $${mb.price}`;
+                motherboardSelect.appendChild(option);
               });
-          });
+            })
+            .catch(error => {
+              console.error('Could not fetch motherboards:', error);
+            });
+        });
+
 
           const updateTotalPrice = () => {
             let totalPrice = 0;
