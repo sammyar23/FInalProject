@@ -101,24 +101,26 @@ html
           .form-row.total-price
             span Total Build Price: $
             span#total-price 0
-    script.
-      document.getElementById('cpu-select').addEventListener('change', function(event) {
-          const cpuSocket = this.options[this.selectedIndex].getAttribute('data-socket');
-          fetch(`/api/components/motherboard?socket=${cpuSocket}`)
-              .then(response => response.json())
-              .then(motherboards => {
-                  const motherboardSelect = document.getElementById('motherboard-select');
-                  motherboardSelect.innerHTML = ''; // Clear existing options
-                  motherboards.forEach(mb => {
-                      const option = document.createElement('option');
-                      option.value = mb.name; // Assuming you use the motherboard name as the value
-                      option.textContent = `${mb.name} - $${mb.price}`;
-                      motherboardSelect.appendChild(option);
-                  });
-              })
-              .catch(error => {
-                  console.error('Error fetching motherboards:', error);
-              });
+      script.
+        document.getElementById('cpu-select').addEventListener('change', function(event) {
+            const cpuSocket = this.options[this.selectedIndex].getAttribute('data-socket');
+            fetch(`/api/components/motherboard?socket=${cpuSocket}`)
+                .then(response => response.json())
+                .then(motherboards => {
+                    const motherboardSelect = document.getElementById('motherboard-select');
+                    motherboardSelect.innerHTML = ''; // Clear existing options
+                    motherboards.forEach(mb => {
+                        const option = document.createElement('option');
+                        option.value = mb.name; // Assuming you use the motherboard name as the value
+                        option.textContent = `${mb.name} - $${mb.price}`;
+                        motherboardSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching motherboards:', error);
+                });
+        });
+
 
 
       script.
