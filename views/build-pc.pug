@@ -101,8 +101,150 @@ html
           .form-row.total-price
             span Total Build Price: $
             span#total-price 0
-    // Scripts at the bottom of the body
-    script(src='/js/validation-script.js')
-    script(src='/js/updatecomponents.js')
-    script(src='/js/calculateTotalPrice.js')
-    script(src='/js/buildPCFormHandler.js')
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const cpuSelect = document.getElementById('cpu-select');
+        if (!cpuSelect) {
+            console.log('CPU select element not found.');
+            return;
+        }
+
+        cpuSelect.addEventListener('change', () => {
+            const socket = cpuSelect.value;
+            fetch(`/api/components/motherboard?socket=${socket}`)
+                .then(response => response.json())
+                .then(motherboards => {
+                    const motherboardSelect = document.getElementById('motherboard-select');
+                    motherboardSelect.innerHTML = ''; // Clear existing options
+
+                    motherboards.forEach(motherboard => {
+                        const option = new Option(`${motherboard.name} - $${motherboard.price}`, motherboard.name);
+                        option.dataset.price = motherboard.price;
+                        motherboardSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Failed to fetch motherboards:', error));
+        });
+      });
+
+
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('select');
+        const totalPriceElement = document.getElementById('total-price');
+
+        function updateTotalPrice() {
+          let totalPrice = 0;
+          selects.forEach(select => {
+            const selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && selectedOption.dataset.price) {
+              totalPrice += parseFloat(selectedOption.dataset.price);
+            }
+          });
+          totalPriceElement.textContent = totalPrice.toFixed(2);
+        }
+
+        selects.forEach(select => {
+          select.addEventListener('change', updateTotalPrice);
+        });
+
+        // Run the calculation once on load
+        updateTotalPrice();
+      });
+
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('myForm');
+        if (!form) {
+            console.log('Form not found');
+            return;
+        }
+
+        form.addEventListener('submit', function(event) {
+          event.preventDefault();;
+
+          let isValid = true;
+          const components = [
+            'cpu',
+            'motherboard',
+            'gpu',
+            'memory',
+            'case',
+            'case-fan',
+            'cpu-cooler',
+            'internal-hard-drive',
+            'power-supply',
+            'sound-card'
+          ]; // You need to collect component data from your form inputs
+
+          // Validate the components
+          components.forEach(component => {
+            if (isNaN(component.price)) {
+              isValid = false;
+              alert('Please fix the prices. They should be numbers.');
+            }
+          });
+
+          // If validation passed, proceed with the form submission
+          if (isValid) {
+            form.submit();
+          }
+        });
+      });
+
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('Page fully loaded');
+        const form = document.getElementById('build-form');
+        if (!form) {
+            console.error('Build form not found.');
+            return;
+        }
+        console.log('Build form found');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            console.log('Form submission intercepted');
+
+            const buildName = document.getElementById('build-name').value;
+            if (!buildName) {
+                alert('Please enter a build name.');
+                return;
+            }
+
+            const selects = document.querySelectorAll('select');
+            const components = Array.from(selects).map(select => {
+                const selectedIndex = select.selectedIndex;
+                const option = select.options[selectedIndex];
+                return {
+                    type: select.name,
+                    name: option.value,
+                    price: parseFloat(option.getAttribute('data-price')) || 0
+                };
+            });
+
+            const payload = {
+                buildName,
+                components
+            };
+
+            fetch('/save-build', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Build saved successfully', data);
+                window.location.href = '/saved-builds'; // Redirect or update UI as needed
+            })
+            .catch(error => {
+                console.error('Error saving the build:', error);
+            });
+        });
+      });
