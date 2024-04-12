@@ -105,30 +105,28 @@ html
       document.addEventListener('DOMContentLoaded', () => {
         const cpuSelect = document.getElementById('cpu-select');
         const motherboardSelect = document.getElementById('motherboard-select');
+        const totalPriceElement = document.getElementById('total-price');
+        const selects = document.querySelectorAll('select');
 
         cpuSelect.addEventListener('change', function() {
           const cpuSocket = this.options[this.selectedIndex].getAttribute('data-socket');
-          motherboardSelect.innerHTML = ''; // Clear motherboard options
-
           fetch(`/api/components/motherboard?socket=${cpuSocket}`)
             .then(response => {
               if (!response.ok) {
                 throw new Error('Network response was not ok');
               }
-              return response.text();
+              return response.json(); // Make sure the server responds with JSON.
             })
-            .then(text => {
-              try {
-                const motherboards = JSON.parse(text);
-                motherboards.forEach(mb => {
-                  const option = document.createElement('option');
-                  option.value = mb.name;
-                  option.textContent = `${mb.name} - $${mb.price}`;
-                  motherboardSelect.appendChild(option);
-                });
-              } catch (error) {
-                throw new Error('Server did not return JSON');
-              }
+            .then(motherboards => {
+              motherboardSelect.innerHTML = ''; // Clear existing options.
+              motherboards.forEach(mb => {
+                const option = document.createElement('option');
+                option.value = mb.name;
+                option.textContent = `${mb.name} - $${mb.price}`;
+                motherboardSelect.appendChild(option);
+              });
+              // Optional: Call updateTotalPrice to update the price if needed
+              // updateTotalPrice();
             })
             .catch(error => {
               console.error('Could not fetch motherboards:', error);
