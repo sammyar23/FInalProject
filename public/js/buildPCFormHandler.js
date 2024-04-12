@@ -11,14 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       console.log('Form submission intercepted');
 
-      // Gather form data here
       const buildName = document.getElementById('build-name').value;
       if (!buildName) {
           alert('Please enter a build name.');
           return;
       }
 
-      // Assuming all select elements have a consistent naming convention like "components[0].type"
       const selects = document.querySelectorAll('select');
       const components = Array.from(selects).map(select => {
           const selectedIndex = select.selectedIndex;
